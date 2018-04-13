@@ -1,16 +1,14 @@
 import React from 'react';
 import { Table, Grid, Loader, Header, Segment, Button, Icon } from 'semantic-ui-react';
-import { Tickets, TicketSchema } from '/imports/api/ticket/ticket';
-import { Bert } from 'meteor/themeteorchef:bert';
-import { Meteor } from 'meteor/meteor';
-import { withTracker } from 'meteor/react-meteor-data';
+// import { Tickets, TicketSchema } from '/imports/api/ticket/ticket';
+// import { Bert } from 'meteor/themeteorchef:bert';
+// import { Meteor } from 'meteor/meteor';
+// import { withTracker } from 'meteor/react-meteor-data';
 import PropTypes from 'prop-types';
 import AddNote from '/imports/ui/components/AddNote';
 
 /** Renders the Page for editing a single document. */
 class ViewTicket extends React.Component {
-
-
   /** If the subscription(s) have been received, render the page, otherwise show a loading icon. */
   render() {
     return (this.props.ready) ? this.renderPage() : <Loader>Getting data</Loader>;
@@ -90,14 +88,14 @@ ViewTicket.propTypes = {
   contact: PropTypes.object.isRequired,
 };
 
-/** withTracker connects Meteor data to React components. https://guide.meteor.com/react.html#using-withTracker */
-export default withTracker(({ match }) => {
-  // Get the documentID from the URL field. See imports/ui/layouts/App.jsx for the route containing :_id.
-  const documentId = match.params._id;
-  // Get access to Contacts documents.
-  const subscription = Meteor.subscribe('Tickets');
-  return {
-    doc: Tickets.findOne(documentId),
-    ready: subscription.ready(),
-  };
-})(ViewTicket);
+// /** withTracker connects Meteor data to React components. https://guide.meteor.com/react.html#using-withTracker */
+// export default withTracker(({ match }) => {
+//   // Get the documentID from the URL field. See imports/ui/layouts/App.jsx for the route containing :_id.
+//   const documentId = match.params._id;
+//   // Get access to Contacts documents.
+//   const subscription = Meteor.subscribe('Tickets');
+//   return {
+//     doc: Tickets.findOne(documentId),
+//     ready: subscription.ready(),
+//   };
+// })(ViewTicket);
