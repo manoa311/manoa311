@@ -143,7 +143,7 @@
 
   "galaxy.meteor.com": {
     "env": {
-      "MONGO_URL": "mongodb://admin:254changeme@ds55160.mlab.com:55160/manoa311"
+      "MONGO_URL": "mongodb://admin:254changeme@dsds155160.mlab.com:55160/manoa311"
     }
   }
 }
