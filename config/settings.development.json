@@ -33,10 +33,10 @@
       "building": "Webster", "floor": "1st", "room": "115",
       "description": "Projector Light Bulb needs replacing",
       "priority": "Urgent",
-      "votes": "5",
-      "status": "Active",
-      "createdOn": "Mon Apr 02 2018 23:01:50 GMT-1000 (HST)",
-      "updatedOn": "Mon Apr 02 2018 23:01:50 GMT-1000 (HST)",
+      "votes": "1",
+      "status": "New",
+      "createdOn": "Mon Apr 09 2018 13:01:50 GMT-1000 (HST)",
+      "updatedOn": "Mon Apr 09 2018 13:01:50 GMT-1000 (HST)",
       "owner": "john@foo.com"
     },
     {
@@ -44,19 +44,99 @@
       "description": "Strange Smell",
       "priority": "Regular",
       "votes": "1",
-      "status": "Active",
-      "createdOn": "Mon Mar 26 2018 23:01:50 GMT-1000 (HST)",
-      "updatedOn": "Mon Mar 26 2018 23:01:50 GMT-1000 (HST)",
+      "status": "New",
+      "createdOn": "Mon Apr 09 2018 15:01:50 GMT-1000 (HST)",
+      "updatedOn": "Mon Apr 09 2018 15:01:50 GMT-1000 (HST)",
       "owner": "john@foo.com"
     },
     {
       "building": "Hemenway", "floor": "2nd", "room": "200C",
       "description": "AC not working",
       "priority": "Urgent",
+      "votes": "1",
+      "status": "New",
+      "createdOn": "Mon Apr 09 2018 19:01:50 GMT-1000 (HST)",
+      "updatedOn": "Mon Apr 09 2018 19:01:50 GMT-1000 (HST)",
+      "owner": "john@foo.com"
+    },
+    {
+      "building": "Spalding", "floor": "1st", "room": "155",
+      "description": "Computer not working",
+      "priority": "Urgent",
+      "votes": "3",
+      "status": "Reviewed",
+      "createdOn": "Mon Apr 02 2018 22:01:50 GMT-1000 (HST)",
+      "updatedOn": "Mon Apr 02 2018 23:01:50 GMT-1000 (HST)",
+      "owner": "john@foo.com"
+    },
+    {
+      "building": "Higa", "floor": "1st", "room": "105",
+      "description": "Chalkboard cracked",
+      "priority": "Regular",
+      "votes": "6",
+      "status": "Reviewed",
+      "createdOn": "Mon Apr 02 2018 12:01:50 GMT-1000 (HST)",
+      "updatedOn": "Mon Apr 02 2018 23:02:50 GMT-1000 (HST)",
+      "owner": "john@foo.com"
+    },
+    {
+      "building": "Webster", "floor": "2nd", "room": "201",
+      "description": "Window cracked",
+      "priority": "Regular",
+      "votes": "6",
+      "status": "Reviewed",
+      "createdOn": "Mon Apr 02 2018 13:01:50 GMT-1000 (HST)",
+      "updatedOn": "Mon Apr 02 2018 23:03:50 GMT-1000 (HST)",
+      "owner": "john@foo.com"
+    },
+    {
+      "building": "Webster", "floor": "2nd", "room": "205",
+      "description": "Project screen jammed and stuck in down position.",
+      "priority": "Regular",
+      "votes": "2",
+      "status": "Reviewed",
+      "createdOn": "Mon Mar 26 2018 21:01:50 GMT-1000 (HST)",
+      "updatedOn": "Mon Mar 26 2018 23:03:50 GMT-1000 (HST)",
+      "owner": "john@foo.com"
+    },
+    {
+      "building": "Webster", "floor": "1st", "room": "114",
+      "description": "All the chairs are missing!  ",
+      "priority": "Critical",
+      "votes": "1",
+      "status": "Reviewed",
+      "createdOn": "Mon Mar 26 2018 21:23:50 GMT-1000 (HST)",
+      "updatedOn": "Mon Mar 26 2018 23:05:50 GMT-1000 (HST)",
+      "owner": "john@foo.com"
+    },
+    {
+      "building": "Crawford", "floor": "1st", "room": "Mens Bathroom",
+      "description": "Water not working",
+      "priority": "Critical",
+      "votes": "4",
+      "status": "Active",
+      "createdOn": "Mon Mar 19 2018 12:01:50 GMT-1000 (HST)",
+      "updatedOn": "Mon Mar 19 2018 23:07:50 GMT-1000 (HST)",
+      "owner": "john@foo.com"
+    },
+    {
+      "building": "Kuykendall", "floor": "3rd", "room": "311",
+      "description": "AC not working",
+      "priority": "Regular",
       "votes": "3",
       "status": "Active",
-      "createdOn": "Mon Apr 09 2018 23:01:50 GMT-1000 (HST)",
-      "updatedOn": "Mon Apr 09 2018 23:01:50 GMT-1000 (HST)",
+      "createdOn": "Mon Mar 19 2018 13:01:50 GMT-1000 (HST)",
+      "updatedOn": "Mon Mar 19 2018 23:09:50 GMT-1000 (HST)",
+      "owner": "john@foo.com"
+    },
+    {
+      "building": "Hemenway", "floor": "2nd", "room": "200D",
+      "description": "AC not working",
+      "priority": "Urgent",
+      "votes": "6",
+      "status": "Active",
+      "createdOn": "Mon Mar 19 2018 12:01:50 GMT-1000 (HST)",
+      "updatedOn": "Mon Mar 19 2018 23:11:50 GMT-1000 (HST)",
       "owner": "john@foo.com"
     }
   ]

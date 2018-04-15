@@ -8,13 +8,13 @@ function addData(data) {
   Contacts.insert(data);
 }
 
-/** Initialize the collection if empty. */
-if (Contacts.find().count() === 0) {
-  if (Meteor.settings.defaultContacts) {
-    console.log('Creating default contacts.');
-    Meteor.settings.defaultContacts.map(data => addData(data));
-  }
-}
+// /** Initialize the collection if empty. */
+// if (Contacts.find().count() === 0) {
+//   if (Meteor.settings.defaultContacts) {
+//     console.log('Creating default contacts.');
+//     Meteor.settings.defaultContacts.map(data => addData(data));
+//   }
+// }
 
 /** This subscription publishes only the documents associated with the logged in user */
 Meteor.publish('Contacts', function publish() {
