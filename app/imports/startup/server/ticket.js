@@ -32,3 +32,11 @@ Meteor.publish('TicketsAdmin', function publish() {
   }
   return this.ready();
 });
+
+/** This subscription publishes all Tickets that hve not been , but only if the logged in user is the Admin. */
+Meteor.publish('TicketsAdmin', function publish() {
+  if (this.userId && Roles.userIsInRole(this.userId, 'admin')) {
+    return Tickets.find({ status: 'New'});
+  }
+  return this.ready();
+});

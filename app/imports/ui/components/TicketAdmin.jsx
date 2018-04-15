@@ -4,20 +4,18 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 
 const bgColors = {
-  "Urgent": "#E9573F",
-  "Regular": "#F6BB42",
+  Urgent: '#E9573F',
+  Regular: '#F6BB42',
 };
 
 
 /** Renders a single row in the List Tickets Admin table. See pages/ListTicketsAdmin.jsx. */
 class TicketAdmin extends React.Component {
   render() {
-    const assignRowBackgroundColor = (priorityLevel) => {
-      return bgColors[priorityLevel];
-    };
+    const assignRowBackgroundColor = (priorityLevel) => bgColors[priorityLevel];
 
     return (
-        <Table.Row style={{backgroundColor: assignRowBackgroundColor(this.props.ticket.priority)}}>
+        <Table.Row style={{ backgroundColor: assignRowBackgroundColor(this.props.ticket.priority) }}>
           <Table.Cell collapsing textAlign="center">
             <Checkbox fitted />
           </Table.Cell>
