@@ -1,31 +1,16 @@
 import React from 'react';
 import { Meteor } from 'meteor/meteor';
-import { Button, Container, Dropdown, Form, Header, Icon, Loader, Menu, Table } from 'semantic-ui-react';
+import { Button, Container, Header, Icon, Input, Loader, Menu, Table } from 'semantic-ui-react';
 import { Tickets } from '/imports/api/ticket/ticket';
 import { withTracker } from 'meteor/react-meteor-data';
 import PropTypes from 'prop-types';
 import TicketAdmin from '/imports/ui/components/TicketAdmin';
-
-const dbFields = [
-  { key: 'building', value: 'building', text: 'building' },
-  { key: 'createdOn', value: 'createdOn', text: 'createdOn' },
-  { key: 'description', value: 'description', text: 'description' },
-  { key: 'floor', value: 'floor', text: 'floor' },
-  { key: 'owner', value: 'owner', text: 'owner' },
-  { key: 'priority', value: 'priority', text: 'priority' },
-  { key: 'room', value: 'room', text: 'room' },
-  { key: 'status', value: 'status', text: 'status' },
-  { key: 'updatedOn', value: 'updatedOn', text: 'updatedOn' },
-  { key: 'votes', value: 'votes', text: 'votes' },
-];
 
 /** Renders a table containing all of the Tickets documents. Use <TicketAdmin> to render each row. */
 class ListTickets extends React.Component {
   constructor() {
     super();
 
-    this.handleChange = this.handleChange.bind(this);
-    this.getSearchInput = this.getSearchInput.bind(this);
     this.handleClickBuilding = this.handleClickBuilding.bind(this);
     this.handleClickRoom = this.handleClickRoom.bind(this);
     this.handleClickPriority = this.handleClickPriority.bind(this);
@@ -40,18 +25,9 @@ class ListTickets extends React.Component {
       b_status: false,
       b_created: false,
       b_updated: false,
-      search: '',
-      search_field: 'building',
     };
   }
 
-  handleChange = (e, { key, name, value }) => {
-    console.log(`search_field is: ${this.state.search_field}`);
-    console.log(`the value is: ${value}`);
-    return this.setState({ [name]: value });
-  };
-
-  getSearchInput = (event) => this.setState({ search: event.target.value.substr(0, 20) });
   handleClickBuilding = () => this.setState({ b_building: !this.state.b_building });
   handleClickRoom = () => this.setState({ b_room: !this.state.b_room });
   handleClickPriority = () => this.setState({ b_priority: !this.state.b_priority });
@@ -66,38 +42,19 @@ class ListTickets extends React.Component {
 
   /** Render the page once subscriptions have been received. */
   renderPage() {
-    const sf = this.state.search_field;
     const b_building = this.state.b_building;
     const b_room = this.state.b_room;
     const b_priority = this.state.b_priority;
     const b_status = this.state.b_status;
     const b_created = this.state.b_created;
     const b_updated = this.state.b_updated;
-    const filteredTickets =
-        this.props.tickets.filter((t) => t[this.state.search_field].indexOf(this.state.search) !== -1);
 
     return (
         <Container>
-          <Header as="h2" textAlign="center" inverted>List of All Tickets</Header>
+          <Header as="h2" textAlign="center" inverted>List of Unresponded Tickets</Header>
           <Menu>
             <Menu.Item>
-              <Dropdown
-                  button
-                  name = 'search_field'
-                  type = 'text'
-                  placeholder='Search Fields'
-                  options={dbFields}
-                  value={this.state.search_field}
-                  onChange ={this.handleChange}
-              />
-              <Form.Input
-                  icon='search'
-                  placeholder=''
-                  type='text'
-                  value={this.state.search}
-                  onChange={this.getSearchInput}
-              />
-              Searching in: {sf}
+              <Input icon='search' placeholder='Search tickets...' />
             </Menu.Item>
           </Menu>
           <Table compact striped>
@@ -149,7 +106,7 @@ class ListTickets extends React.Component {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {filteredTickets.map((ticket, index) => <TicketAdmin key={index} ticket={ticket} />)}
+              {this.props.tickets.map((ticket, index) => <TicketAdmin key={index} ticket={ticket} />)}
             </Table.Body>
             <Table.Footer fullWidth>
               <Table.Row>
@@ -190,7 +147,7 @@ ListTickets.propTypes = {
 /** withTracker connects Meteor data to React components. https://guide.meteor.com/react.html#using-withTracker */
 export default withTracker(() => {
   // Get access to Tickets documents.
-  const subscription = Meteor.subscribe('TicketsAdmin');
+  const subscription = Meteor.subscribe('TicketsAdminNew');
   return {
     tickets: Tickets.find({}, { sort: { createdOn: -1 } }).fetch(),
     ready: subscription.ready(),

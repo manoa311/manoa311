@@ -17,6 +17,7 @@ import Signin from '../pages/Signin';
 import Signup from '../pages/Signup';
 import Signout from '../pages/Signout';
 import ListTicketsAdmin from '../pages/ListTicketsAdmin';
+import ListTicketsAdminNewOnly from '../pages/ListTicketsAdminNewOnly';
 
 
 /** Top-level layout component for this application. Called in imports/startup/client/startup.jsx. */
@@ -34,7 +35,7 @@ class App extends React.Component {
               <ProtectedRoute path="/add" component={AddContact}/>
               <ProtectedRoute path="/edit/:_id" component={EditContact}/>
               <ProtectedRoute path="/view" component={ViewTicket}/>
-              <AdminProtectedRoute path="/admin" component={ListContactsAdmin}/>
+              <AdminProtectedRoute path="/admin-ticket-new" component={ListTicketsAdminNewOnly}/>
               <AdminProtectedRoute path="/admin-ticket" component={ListTicketsAdmin}/>
               <ProtectedRoute path="/signout" component={Signout}/>
               <Route component={NotFound}/>
