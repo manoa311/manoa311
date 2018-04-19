@@ -7,16 +7,16 @@ import PropTypes from 'prop-types';
 import TicketAdmin from '/imports/ui/components/TicketAdmin';
 
 const dbFields = [
-  { key: 1, value: 'building', text: 'building' },
-  { key: 2, value: 'createdOn', text: 'createdOn' },
-  { key: 3, value: 'description', text: 'description' },
-  { key: 4, value: 'floor', text: 'floor' },
-  { key: 5, value: 'owner', text: 'owner' },
-  { key: 6, value: 'priority', text: 'priority' },
-  { key: 7, value: 'room', text: 'room' },
-  { key: 8, value: 'status', text: 'status' },
-  { key: 9, value: 'updatedOn', text: 'updatedOn' },
-  { key: 10, value: 'votes', text: 'votes' },
+  { key: 'building', value: 'building', text: 'building' },
+  { key: 'createdOn', value: 'createdOn', text: 'createdOn' },
+  { key: 'description', value: 'description', text: 'description' },
+  { key: 'floor', value: 'floor', text: 'floor' },
+  { key: 'owner', value: 'owner', text: 'owner' },
+  { key: 'priority', value: 'priority', text: 'priority' },
+  { key: 'room', value: 'room', text: 'room' },
+  { key: 'status', value: 'status', text: 'status' },
+  { key: 'updatedOn', value: 'updatedOn', text: 'updatedOn' },
+  { key: 'votes', value: 'votes', text: 'votes' },
 ];
 
 /** Renders a table containing all of the Tickets documents. Use <TicketAdmin> to render each row. */
@@ -24,7 +24,7 @@ class ListTickets extends React.Component {
   constructor() {
     super();
 
-    this.getSearchField = this.getSearchField.bind(this);
+    this.handleChange = this.handleChange.bind(this);
     this.getSearchInput = this.getSearchInput.bind(this);
     this.handleClickBuilding = this.handleClickBuilding.bind(this);
     this.handleClickRoom = this.handleClickRoom.bind(this);
@@ -41,11 +41,16 @@ class ListTickets extends React.Component {
       b_created: false,
       b_updated: false,
       search: '',
-      searchField: 'building',
+      search_field: 'building',
     };
   }
 
-  getSearchField = (event) => this.setState({ searchField: event.target.value });
+  handleChange = (e, { key, name, value }) => {
+    console.log(`search_field is: ${this.state.search_field}`);
+    console.log(`the value is: ${value}`);
+    return this.setState({ [name]: value });
+  };
+
   getSearchInput = (event) => this.setState({ search: event.target.value.substr(0, 20) });
   handleClickBuilding = () => this.setState({ b_building: !this.state.b_building });
   handleClickRoom = () => this.setState({ b_room: !this.state.b_room });
@@ -61,6 +66,7 @@ class ListTickets extends React.Component {
 
   /** Render the page once subscriptions have been received. */
   renderPage() {
+    const sf = this.state.search_field;
     const b_building = this.state.b_building;
     const b_room = this.state.b_room;
     const b_priority = this.state.b_priority;
@@ -68,8 +74,7 @@ class ListTickets extends React.Component {
     const b_created = this.state.b_created;
     const b_updated = this.state.b_updated;
     const filteredTickets =
-        this.props.tickets.filter((t) => t["building"].indexOf(this.state.search) !== -1);
-
+        this.props.tickets.filter((t) => t[this.state.search_field].indexOf(this.state.search) !== -1);
 
     return (
         <Container>
@@ -78,19 +83,21 @@ class ListTickets extends React.Component {
             <Menu.Item>
               <Dropdown
                   button
+                  name = 'search_field'
+                  type = 'text'
                   placeholder='Search Fields'
                   options={dbFields}
-                  value={this.state.searchField}
-                  onChange={this.getSearchField.bind(this)}
+                  value={this.state.search_field}
+                  onChange ={this.handleChange}
               />
               <Form.Input
                   icon='search'
                   placeholder=''
                   type='text'
                   value={this.state.search}
-                  onChange={this.getSearchInput.bind(this)}
+                  onChange={this.getSearchInput}
               />
-              Searching in: {this.state.searchField}
+              Searching in: {sf}
             </Menu.Item>
           </Menu>
           <Table compact striped>
