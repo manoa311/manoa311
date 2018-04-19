@@ -45,13 +45,14 @@ class ListTickets extends React.Component {
     };
   }
 
-  handleChange = (e, { key, name, value }) => {
+  getSearchInput = (event) => this.setState({ search: event.target.value.substr(0, 20) });
+
+  handleChange = (e, { name, value }) => {
     console.log(`search_field is: ${this.state.search_field}`);
     console.log(`the value is: ${value}`);
     return this.setState({ [name]: value });
   };
 
-  getSearchInput = (event) => this.setState({ search: event.target.value.substr(0, 20) });
   handleClickBuilding = () => this.setState({ b_building: !this.state.b_building });
   handleClickRoom = () => this.setState({ b_room: !this.state.b_room });
   handleClickPriority = () => this.setState({ b_priority: !this.state.b_priority });
@@ -66,14 +67,13 @@ class ListTickets extends React.Component {
 
   /** Render the page once subscriptions have been received. */
   renderPage() {
-    const sf = this.state.search_field;
     const b_building = this.state.b_building;
     const b_room = this.state.b_room;
     const b_priority = this.state.b_priority;
     const b_status = this.state.b_status;
     const b_created = this.state.b_created;
     const b_updated = this.state.b_updated;
-    const filteredTickets =
+    const searchedTickets =
         this.props.tickets.filter((t) => t[this.state.search_field].indexOf(this.state.search) !== -1);
 
     return (
@@ -97,7 +97,6 @@ class ListTickets extends React.Component {
                   value={this.state.search}
                   onChange={this.getSearchInput}
               />
-              Searching in: {sf}
             </Menu.Item>
           </Menu>
           <Table compact striped>
@@ -149,7 +148,7 @@ class ListTickets extends React.Component {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {filteredTickets.map((ticket, index) => <TicketAdmin key={index} ticket={ticket} />)}
+              {searchedTickets.map((ticket, index) => <TicketAdmin key={index} ticket={ticket} />)}
             </Table.Body>
             <Table.Footer fullWidth>
               <Table.Row>
