@@ -5,18 +5,25 @@ import { Tickets } from '/imports/api/ticket/ticket';
 import { withTracker } from 'meteor/react-meteor-data';
 import PropTypes from 'prop-types';
 import TicketAdmin from '/imports/ui/components/TicketAdmin';
+import DatePicker from 'react-datepicker';
+import moment from 'moment';
+import 'react-datepicker/dist/react-datepicker.css';
 
-const dbFields = [
+
+const dbDataFields = [
   { key: 'building', value: 'building', text: 'building' },
-  { key: 'createdOn', value: 'createdOn', text: 'createdOn' },
   { key: 'description', value: 'description', text: 'description' },
   { key: 'floor', value: 'floor', text: 'floor' },
   { key: 'owner', value: 'owner', text: 'owner' },
   { key: 'priority', value: 'priority', text: 'priority' },
   { key: 'room', value: 'room', text: 'room' },
   { key: 'status', value: 'status', text: 'status' },
-  { key: 'updatedOn', value: 'updatedOn', text: 'updatedOn' },
   { key: 'votes', value: 'votes', text: 'votes' },
+];
+
+const dbDateFields = [
+  { key: 'createdOn', value: 'createdOn', text: 'createdOn' },
+  { key: 'updatedOn', value: 'updatedOn', text: 'updatedOn' },
 ];
 
 /** Renders a table containing all of the Tickets documents. Use <TicketAdmin> to render each row. */
@@ -24,8 +31,11 @@ class ListTickets extends React.Component {
   constructor() {
     super();
 
-    this.handleChange = this.handleChange.bind(this);
     this.getSearchInput = this.getSearchInput.bind(this);
+    this.handleChangeDataSearchField = this.handleChangeDataSearchField.bind(this);
+    this.handleChangeDateSearchField = this.handleChangeDateSearchField.bind(this);
+    this.handleChangeStart = this.handleChangeStart.bind(this);
+    this.handleChangeEnd = this.handleChangeEnd.bind(this);
     this.handleClickBuilding = this.handleClickBuilding.bind(this);
     this.handleClickRoom = this.handleClickRoom.bind(this);
     this.handleClickPriority = this.handleClickPriority.bind(this);
@@ -42,16 +52,19 @@ class ListTickets extends React.Component {
       b_updated: false,
       search: '',
       search_field: 'building',
+      search_date_field: 'createdOn',
+      date_start: moment(),
+      date_end: moment(),
     };
   }
 
   getSearchInput = (event) => this.setState({ search: event.target.value.substr(0, 20) });
 
-  handleChange = (e, { name, value }) => {
-    console.log(`search_field is: ${this.state.search_field}`);
-    console.log(`the value is: ${value}`);
-    return this.setState({ [name]: value });
-  };
+  handleChangeDataSearchField = (e, { name, value }) => this.setState({ [name]: value });
+  handleChangeDateSearchField = (e, { name, value }) => this.setState({ [name]: value });
+
+  handleChangeStart = (date) => this.setState({ date_start: date });
+  handleChangeEnd = (date) => this.setState({ date_end: date });
 
   handleClickBuilding = () => this.setState({ b_building: !this.state.b_building });
   handleClickRoom = () => this.setState({ b_room: !this.state.b_room });
@@ -59,6 +72,7 @@ class ListTickets extends React.Component {
   handleClickStatus = () => this.setState({ b_status: !this.state.b_status });
   handleClickCreated = () => this.setState({ b_created: !this.state.b_created });
   handleClickUpdated = () => this.setState({ b_updated: !this.state.b_updated });
+
 
   /** If the subscription(s) have been received, render the page, otherwise show a loading icon. */
   render() {
@@ -73,8 +87,8 @@ class ListTickets extends React.Component {
     const b_status = this.state.b_status;
     const b_created = this.state.b_created;
     const b_updated = this.state.b_updated;
-    const searchedTickets =
-        this.props.tickets.filter((t) => t[this.state.search_field].indexOf(this.state.search) !== -1);
+    const searched = this.props.tickets.filter((t) => t[this.state.search_field].indexOf(this.state.search) !== -1);
+    const timeSearchTickets = searched.filter((t) => moment(t.createdOn).isBefore(this.state.date_start));
 
     return (
         <Container>
@@ -85,17 +99,46 @@ class ListTickets extends React.Component {
                   button
                   name = 'search_field'
                   type = 'text'
-                  placeholder='Search Fields'
-                  options={dbFields}
-                  value={this.state.search_field}
-                  onChange ={this.handleChange}
+                  placeholder = 'Search Fields'
+                  options = {dbDataFields}
+                  value = {this.state.search_field}
+                  onChange = {this.handleChangeDataSearchField}
               />
               <Form.Input
-                  icon='search'
-                  placeholder=''
-                  type='text'
-                  value={this.state.search}
-                  onChange={this.getSearchInput}
+                  icon = 'search'
+                  placeholder = ''
+                  type = 'text'
+                  value = {this.state.search}
+                  onChange = {this.getSearchInput}
+              />
+            </Menu.Item>
+            <Menu.Item>
+              <Dropdown
+                  button
+                  name = 'search_date_field'
+                  type = 'text'
+                  placeholder = 'Date Field To Query'
+                  options = {dbDateFields}
+                  value = {this.state.search_date_field}
+                  onChange = {this.handleChangeDateSearchField}
+              />
+              <DatePicker
+                  showYearDropdown
+                  isClearable={true}
+                  selected = {this.state.date_start}
+                  selectsStart
+                  startDate={this.state.date_start}
+                  endDate={this.state.date_end}
+                  onChange = {this.handleChangeStart}
+              />
+              <DatePicker
+                  showYearDropdown
+                  isClearable={true}
+                  selected = {this.state.date_end}
+                  selectsEnd
+                  startDate={this.state.date_start}
+                  endDate={this.state.date_end}
+                  onChange = {this.handleChangeEnd}
               />
             </Menu.Item>
           </Menu>
@@ -148,7 +191,7 @@ class ListTickets extends React.Component {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {searchedTickets.map((ticket, index) => <TicketAdmin key={index} ticket={ticket} />)}
+              {timeSearchTickets.map((ticket, index) => <TicketAdmin key={index} ticket={ticket} />)}
             </Table.Body>
             <Table.Footer fullWidth>
               <Table.Row>
