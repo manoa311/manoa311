@@ -31,12 +31,12 @@
   "defaultTickets": [
     {
       "building": "Webster", "floor": "1st", "room": "115",
-      "description": "Projector Light Bulb needs replacing",
+      "description": "Projector Light Bulb needs replacing for my PowerPoint presentation tomorrow!",
       "priority": "Urgent",
       "votes": "1",
       "status": "New",
-      "createdOn": "Mon Apr 09 2018 13:01:50 GMT-1000 (HST)",
-      "updatedOn": "Mon Apr 09 2018 13:01:50 GMT-1000 (HST)",
+      "createdOn": "2018-04-09T13:01:50Z",
+      "updatedOn": "2018-04-09T13:01:50Z",
       "owner": "john@foo.com"
     },
     {
@@ -45,8 +45,8 @@
       "priority": "Regular",
       "votes": "1",
       "status": "New",
-      "createdOn": "Mon Apr 09 2018 15:01:50 GMT-1000 (HST)",
-      "updatedOn": "Mon Apr 09 2018 15:01:50 GMT-1000 (HST)",
+      "createdOn": "2018-04-09T15:01:50Z",
+      "updatedOn": "2018-04-09T15:01:50Z",
       "owner": "john@foo.com"
     },
     {
@@ -55,8 +55,8 @@
       "priority": "Urgent",
       "votes": "1",
       "status": "New",
-      "createdOn": "Mon Apr 09 2018 19:01:50 GMT-1000 (HST)",
-      "updatedOn": "Mon Apr 09 2018 19:01:50 GMT-1000 (HST)",
+      "createdOn": "2018-04-09T19:01:50Z",
+      "updatedOn": "2018-04-09T19:01:50Z",
       "owner": "john@foo.com"
     },
     {
@@ -65,8 +65,8 @@
       "priority": "Urgent",
       "votes": "3",
       "status": "Reviewed",
-      "createdOn": "Mon Apr 02 2018 22:01:50 GMT-1000 (HST)",
-      "updatedOn": "Mon Apr 02 2018 23:01:50 GMT-1000 (HST)",
+      "createdOn": "2018-04-09T22:01:50Z",
+      "updatedOn": "2018-04-09T23:01:50Z",
       "owner": "john@foo.com"
     },
     {
@@ -75,8 +75,8 @@
       "priority": "Regular",
       "votes": "6",
       "status": "Reviewed",
-      "createdOn": "Mon Apr 02 2018 12:01:50 GMT-1000 (HST)",
-      "updatedOn": "Mon Apr 02 2018 23:02:50 GMT-1000 (HST)",
+      "createdOn": "2018-04-02T12:01:50Z",
+      "updatedOn": "2018-04-02T23:02:50Z",
       "owner": "john@foo.com"
     },
     {
@@ -85,8 +85,8 @@
       "priority": "Regular",
       "votes": "6",
       "status": "Reviewed",
-      "createdOn": "Mon Apr 02 2018 13:01:50 GMT-1000 (HST)",
-      "updatedOn": "Mon Apr 02 2018 23:03:50 GMT-1000 (HST)",
+      "createdOn": "2018-04-02T13:01:50Z",
+      "updatedOn": "2018-04-02T23:03:50Z",
       "owner": "john@foo.com"
     },
     {
@@ -95,18 +95,18 @@
       "priority": "Regular",
       "votes": "2",
       "status": "Reviewed",
-      "createdOn": "Mon Mar 26 2018 21:01:50 GMT-1000 (HST)",
-      "updatedOn": "Mon Mar 26 2018 23:03:50 GMT-1000 (HST)",
+      "createdOn": "2018-03-26T21:01:50Z",
+      "updatedOn": "2018-03-26T23:03:50Z",
       "owner": "john@foo.com"
     },
     {
       "building": "Webster", "floor": "1st", "room": "114",
-      "description": "All the chairs are missing!",
+      "description": "All the chairs are missing!  ",
       "priority": "Critical",
       "votes": "1",
       "status": "Reviewed",
-      "createdOn": "Mon Mar 26 2018 21:23:50 GMT-1000 (HST)",
-      "updatedOn": "Mon Mar 26 2018 23:05:50 GMT-1000 (HST)",
+      "createdOn": "2018-03-26T21:23:50Z",
+      "updatedOn": "2018-03-26T23:05:50Z",
       "owner": "john@foo.com"
     },
     {
@@ -115,8 +115,8 @@
       "priority": "Critical",
       "votes": "4",
       "status": "Active",
-      "createdOn": "Mon Mar 19 2018 12:01:50 GMT-1000 (HST)",
-      "updatedOn": "Mon Mar 19 2018 23:07:50 GMT-1000 (HST)",
+      "createdOn": "2018-03-19T12:01:50Z",
+      "updatedOn": "2018-03-19T23:07:50Z",
       "owner": "john@foo.com"
     },
     {
@@ -125,18 +125,18 @@
       "priority": "Regular",
       "votes": "3",
       "status": "Active",
-      "createdOn": "Mon Mar 19 2018 13:01:50 GMT-1000 (HST)",
-      "updatedOn": "Mon Mar 19 2018 23:09:50 GMT-1000 (HST)",
+      "createdOn": "2018-03-19T13:01:50Z",
+      "updatedOn": "2018-03-19T23:09:50Z",
       "owner": "john@foo.com"
     },
     {
       "building": "Hemenway", "floor": "2nd", "room": "200D",
       "description": "AC not working",
       "priority": "Urgent",
-      "votes": "6 ",
+      "votes": "6",
       "status": "Active",
-      "createdOn": "Mon Mar 19 2018 12:01:50 GMT-1000 (HST)",
-      "updatedOn": "Mon Mar 19 2018 23:11:50 GMT-1000 (HST)",
+      "createdOn": "2018-03-19T12:01:50Z",
+      "updatedOn": "2018-03-19T23:11:50Z",
       "owner": "john@foo.com"
     }
   ],
