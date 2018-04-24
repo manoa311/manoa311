@@ -8,8 +8,7 @@ import TicketAdmin from '/imports/ui/components/TicketAdmin';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
-// import { filter } from 'underscore';
-/* global _ */
+import _ from 'lodash';
 
 const dbDataFields = [
   { key: 'building', value: 'building', text: 'building' },
@@ -36,7 +35,6 @@ class ListTickets extends React.Component {
     this.addFilterInclusive = this.addFilterInclusive.bind(this);
     this.clearFilter = this.clearFilter.bind(this);
     this.clearFilterInclusive = this.clearFilterInclusive.bind(this);
-    this.forSort = this.forSort.bind.(this);
     this.getFilterInput = this.getFilterInput.bind(this);
     this.getFilterInputInclusive = this.getFilterInputInclusive.bind(this);
     this.getSearchInput = this.getSearchInput.bind(this);
@@ -51,13 +49,12 @@ class ListTickets extends React.Component {
     this.handleClickCreated = this.handleClickCreated.bind(this);
     this.handleClickUpdated = this.handleClickUpdated.bind(this);
     this.has = this.has.bind(this);
+    this.mySort = this.mySort.bind(this);
     this.filtering = this.filtering.bind(this);
     this.lastMonth = this.lastMonth.bind(this);
     this.lastWeek = this.lastWeek.bind(this);
     this.timeFilter = this.timeFilter.bind(this);
     this.timeFilterOff = this.timeFilterOff.bind(this);
-    // this.componentDidMount = this.componentDidMount.bind(this);
-
 
     this.state = {
       b_building: false,
@@ -80,14 +77,12 @@ class ListTickets extends React.Component {
       time_filter_active: false,
       temp_filter: [],
       temp_filter_inclusive: [],
-      sorts: [],
-      temp_sorts: [],
+      sorts: ['building', 'priority'],
+      temp_sorts: [this.mySort('buidling'), this.mySort('priority', false)],
+
     };
   }
 
-  // componentDidMount = () => {
-  //   this.setState({ data: this.props.tickets });
-  // }
 
   addFilter() {
     const currArr = this.state.filters;
@@ -104,8 +99,20 @@ class ListTickets extends React.Component {
     this.setState({ temp_filter_inclusive: '' });
   }
 
+  applySorts(coll) {
+    // const arrSort = this.state.sorts;
+    // const arrOfSorts = this.state.temp_sorts;
+    // if (arrOfSorts.length > 0) {.find({}, { sort: { createdOn: -1 } }).fetch()
+    //   function ()
+    // }
+    return _.orderBy(coll, ['building', 'priority'], ['asc', 'asc']);
+    // return _.chain(coll).sortBy('building').sortBy('createdOn').value();
+  }
+
   clearFilter = () => this.setState({ filters: [] });
   clearFilterInclusive = () => this.setState({ filters_inclusive: [] });
+
+  mySort = (field) => function (coll) { return _.sortBy(coll, field); }
 
   getFilterInput = (event) => this.setState({ temp_filter: event.target.value.substr(0, 20) });
   getFilterInputInclusive = (event) => this.setState({ temp_filter_inclusive: event.target.value.substr(0, 20) });
@@ -126,7 +133,7 @@ class ListTickets extends React.Component {
   handleClickCreated = () => this.setState({ b_created: !this.state.b_created });
   handleClickUpdated = () => this.setState({ b_updated: !this.state.b_updated });
 
-  has = (criteria) => function (value) { return _.contains(value, criteria); }
+  has = (criteria) => function (value) { return _.includes(value, criteria); }
 
   filtering = (orgArr, coll) => {
     if (orgArr.length > 0) {
@@ -209,6 +216,7 @@ class ListTickets extends React.Component {
     const collSearched = collFiltered.filter((t) => t[this.state.search_field].indexOf(this.state.search) !== -1);
     // const timeSearchTickets = searched.filter((t) => moment(t.createdOn).isBefore(this.state.date_start));
     const collTimeSearchTickets = this.timeFilter(collSearched);
+    const collSorted = this.applySorts(collTimeSearchTickets);
     // const timeSearchTickets = searched.filter((t) => this.state.time_filters);
     // const searched = this.quickQuery(filtered, s_field, s);
 
@@ -385,7 +393,7 @@ class ListTickets extends React.Component {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {collTimeSearchTickets.map((ticket, index) => <TicketAdmin key={index} ticket={ticket} />)}
+              {collSorted.map((ticket, index) => <TicketAdmin key={index} ticket={ticket} />)}
             </Table.Body>
             <Table.Footer fullWidth>
               <Table.Row>
