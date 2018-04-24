@@ -25,6 +25,7 @@ class TicketAdmin extends React.Component {
           <Table.Cell>{this.props.ticket.priority}</Table.Cell>
           <Table.Cell>{this.props.ticket.description}</Table.Cell>
           <Table.Cell>{this.props.ticket.status}</Table.Cell>
+          <Table.Cell>{this.props.ticket.votes}</Table.Cell>
           <Table.Cell>{this.props.ticket.createdOn.toLocaleDateString('en-US')}</Table.Cell>
           <Table.Cell>{this.props.ticket.updatedOn.toLocaleDateString('en-US')}</Table.Cell>
         </Table.Row>

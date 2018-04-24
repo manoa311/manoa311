@@ -8,8 +8,20 @@ import TicketAdmin from '/imports/ui/components/TicketAdmin';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
-// import { filter } from 'underscore';
-/* global _ */
+import _ from 'lodash';
+
+const dbAllFields = [
+  { key: 0, value: 'building', text: 'building' },
+  { key: 1, value: 'description', text: 'description' },
+  { key: 2, value: 'floor', text: 'floor' },
+  { key: 3, value: 'owner', text: 'owner' },
+  { key: 4, value: 'priority', text: 'priority' },
+  { key: 5, value: 'room', text: 'room' },
+  { key: 6, value: 'status', text: 'status' },
+  { key: 7, value: 'votes', text: 'votes' },
+  { key: 8, value: 'createdOn', text: 'createdOn' },
+  { key: 9, value: 'updatedOn', text: 'updatedOn' },
+];
 
 const dbDataFields = [
   { key: 'building', value: 'building', text: 'building' },
@@ -20,11 +32,18 @@ const dbDataFields = [
   { key: 'room', value: 'room', text: 'room' },
   { key: 'status', value: 'status', text: 'status' },
   { key: 'votes', value: 'votes', text: 'votes' },
+  { key: 'createdOn', value: 'createdOn', text: 'createdOn' },
+  { key: 'updatedOn', value: 'updatedOn', text: 'updatedOn' },
 ];
 
 const dbDateFields = [
   { key: 'createdOn', value: 'createdOn', text: 'createdOn' },
   { key: 'updatedOn', value: 'updatedOn', text: 'updatedOn' },
+];
+
+const sortOrder = [
+  { key: 'ascending', value: 'asc', text: 'Ascending' },
+  { key: 'descending', value: 'desc', text: 'Descending' },
 ];
 
 /** Renders a table containing all of the Tickets documents. Use <TicketAdmin> to render each row. */
@@ -34,6 +53,7 @@ class ListTickets extends React.Component {
 
     this.addFilter = this.addFilter.bind(this);
     this.addFilterInclusive = this.addFilterInclusive.bind(this);
+    this.addSort = this.addSort.bind(this);
     this.clearFilter = this.clearFilter.bind(this);
     this.clearFilterInclusive = this.clearFilterInclusive.bind(this);
     this.getFilterInput = this.getFilterInput.bind(this);
@@ -41,6 +61,8 @@ class ListTickets extends React.Component {
     this.getSearchInput = this.getSearchInput.bind(this);
     this.handleChangeDataSearchField = this.handleChangeDataSearchField.bind(this);
     this.handleChangeDateSearchField = this.handleChangeDateSearchField.bind(this);
+    this.handleChangeSortField = this.handleChangeSortField.bind(this);
+    this.handleChangeSortOrder = this.handleChangeSortOrder.bind(this);
     this.handleChangeStart = this.handleChangeStart.bind(this);
     this.handleChangeEnd = this.handleChangeEnd.bind(this);
     this.handleClickBuilding = this.handleClickBuilding.bind(this);
@@ -55,8 +77,6 @@ class ListTickets extends React.Component {
     this.lastWeek = this.lastWeek.bind(this);
     this.timeFilter = this.timeFilter.bind(this);
     this.timeFilterOff = this.timeFilterOff.bind(this);
-    // this.componentDidMount = this.componentDidMount.bind(this);
-
 
     this.state = {
       b_building: false,
@@ -76,15 +96,16 @@ class ListTickets extends React.Component {
       filter_priority: [this.has('Regular')],
       filters: [],
       filters_inclusive: [],
+      sort_fields: [],
+      sort_orders: [],
       time_filter_active: false,
       temp_filter: [],
       temp_filter_inclusive: [],
+      temp_sort_field: '',
+      temp_sort_order: '',
     };
   }
 
-  // componentDidMount = () => {
-  //   this.setState({ data: this.props.tickets });
-  // }
 
   addFilter() {
     const currArr = this.state.filters;
@@ -93,6 +114,7 @@ class ListTickets extends React.Component {
     this.setState({ temp_filter_array: _.map(newArr, this.has) });
     this.setState({ temp_filter: '' });
   }
+
   addFilterInclusive() {
     const currArr = this.state.filters_inclusive;
     const newArr = currArr.concat(this.state.temp_filter_inclusive);
@@ -101,8 +123,30 @@ class ListTickets extends React.Component {
     this.setState({ temp_filter_inclusive: '' });
   }
 
+  addSort() {
+    const currArrField = this.state.sort_fields;
+    const newArrField = currArrField.concat(this.state.temp_sort_field);
+    const currArrOrder = this.state.sort_fields;
+    const newArrOrder = currArrOrder.concat(this.state.temp_sort_order);
+    this.setState({ sort_fields: newArrField });
+    this.setState({ sort_orders: newArrOrder });
+    this.setState({ temp_filter_field: '' });
+    this.setState({ temp_filter_order: '' });
+  }
+
+  applySorts(coll) {
+    const arrSortFields = this.state.sort_fields;
+    const arrSortOrders = this.state.sort_orders;
+    if (arrSortFields.length > 0) {
+      return _.orderBy(coll, arrSortFields, arrSortOrders);
+    }
+    return coll;
+  }
+
   clearFilter = () => this.setState({ filters: [] });
   clearFilterInclusive = () => this.setState({ filters_inclusive: [] });
+
+  clearSort = () => { this.setState({ sort_fields: [] }); this.setState({ sort_orders: [] }); }
 
   getFilterInput = (event) => this.setState({ temp_filter: event.target.value.substr(0, 20) });
   getFilterInputInclusive = (event) => this.setState({ temp_filter_inclusive: event.target.value.substr(0, 20) });
@@ -112,6 +156,10 @@ class ListTickets extends React.Component {
   handleChangeDataSearchField = (e, { name, value }) => this.setState({ [name]: value });
 
   handleChangeDateSearchField = (e, { name, value }) => this.setState({ [name]: value });
+
+  handleChangeSortField = (e, { name, value }) => this.setState({ [name]: value });
+  handleChangeSortOrder = (e, { name, value }) => this.setState({ [name]: value });
+
 
   handleChangeStart = (date) => this.setState({ date_start: date });
   handleChangeEnd = (date) => this.setState({ date_end: date });
@@ -123,7 +171,7 @@ class ListTickets extends React.Component {
   handleClickCreated = () => this.setState({ b_created: !this.state.b_created });
   handleClickUpdated = () => this.setState({ b_updated: !this.state.b_updated });
 
-  has = (criteria) => function (value) { return _.contains(value, criteria); }
+  has = (criteria) => function (value) { return _.includes(value, criteria); }
 
   filtering = (orgArr, coll) => {
     if (orgArr.length > 0) {
@@ -200,18 +248,14 @@ class ListTickets extends React.Component {
     const b_updated = this.state.b_updated;
     const f_list = this.state.filters;
     const f_list_inclusive = this.state.filters_inclusive;
+    const s_list = _.zip(this.state.sort_fields, this.state.sort_orders);
 
     const collFilteredInclusive = this.filteringInclusive(f_list_inclusive);
     const collFiltered = this.filtering(f_list, collFilteredInclusive);
     const collSearched = collFiltered.filter((t) => t[this.state.search_field].indexOf(this.state.search) !== -1);
-    // const timeSearchTickets = searched.filter((t) => moment(t.createdOn).isBefore(this.state.date_start));
     const collTimeSearchTickets = this.timeFilter(collSearched);
-    // const timeSearchTickets = searched.filter((t) => this.state.time_filters);
-    // const searched = this.quickQuery(filtered, s_field, s);
+    const collSorted = this.applySorts(collTimeSearchTickets);
 
-    // const ticketsAfterAllFilters = function () {
-    //   return timeSearchTickets;
-    // };
 
     return (
         <Container>
@@ -333,6 +377,42 @@ class ListTickets extends React.Component {
           <List>
             {f_list.map((filter, index) => <Button key={index} content={filter}/>)}
           </List>
+          <Header textAlign='center' as='h3' inverted>Sorts</Header>
+          <Menu>
+            <Dropdown
+                button
+                name = 'temp_sort_field'
+                type = 'text'
+                placeholder = 'Sort Fields'
+                options = {dbAllFields}
+                value = {this.state.temp_sort_field}
+                onChange = {this.handleChangeSortField}
+            />
+            <Dropdown
+                button
+                name = 'temp_sort_order'
+                type = 'text'
+                placeholder = 'Sort Order'
+                options = {sortOrder}
+                value = {this.state.temp_sort_order}
+                onChange = {this.handleChangeSortOrder}
+            />
+            <Menu.Item
+                name='addSort'
+                onClick={this.addSort}
+            >
+              Add Filter
+            </Menu.Item>
+            <Menu.Item
+                name='clearSort'
+                onClick={this.clearSort}
+            >
+              Clear Filter
+            </Menu.Item>
+          </Menu>
+          <List>
+            {s_list.map((filter, index) => <Button key={index} content={filter}/>)}
+          </List>
           <Table compact striped>
             <Table.Header>
               <Table.Row>
@@ -382,7 +462,7 @@ class ListTickets extends React.Component {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {collTimeSearchTickets.map((ticket, index) => <TicketAdmin key={index} ticket={ticket} />)}
+              {collSorted.map((ticket, index) => <TicketAdmin key={index} ticket={ticket} />)}
             </Table.Body>
             <Table.Footer fullWidth>
               <Table.Row>
