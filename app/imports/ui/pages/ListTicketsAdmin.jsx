@@ -33,7 +33,11 @@ class ListTickets extends React.Component {
     super();
 
     this.addFilter = this.addFilter.bind(this);
+    this.addFilterInclusive = this.addFilterInclusive.bind(this);
+    this.clearFilter = this.clearFilter.bind(this);
+    this.clearFilterInclusive = this.clearFilterInclusive.bind(this);
     this.getFilterInput = this.getFilterInput.bind(this);
+    this.getFilterInputInclusive = this.getFilterInputInclusive.bind(this);
     this.getSearchInput = this.getSearchInput.bind(this);
     this.handleChangeDataSearchField = this.handleChangeDataSearchField.bind(this);
     this.handleChangeDateSearchField = this.handleChangeDateSearchField.bind(this);
@@ -48,6 +52,11 @@ class ListTickets extends React.Component {
     this.has = this.has.bind(this);
     this.filtering = this.filtering.bind(this);
     this.lastMonth = this.lastMonth.bind(this);
+    this.lastWeek = this.lastWeek.bind(this);
+    this.timeFilter = this.timeFilter.bind(this);
+    this.timeFilterOff = this.timeFilterOff.bind(this);
+    // this.componentDidMount = this.componentDidMount.bind(this);
+
 
     this.state = {
       b_building: false,
@@ -56,6 +65,7 @@ class ListTickets extends React.Component {
       b_status: false,
       b_created: false,
       b_updated: false,
+      data: [],
       search: '',
       search_field: 'building',
       search_date_field: 'createdOn',
@@ -65,23 +75,42 @@ class ListTickets extends React.Component {
       filter_building: [this.has('Webster'), this.has('Sakamaki'), this.has('Critical')],
       filter_priority: [this.has('Regular')],
       filters: [],
-      time_filters: '',
-      temp_filter: '',
-      temp_filter_array: ['Regular'],
+      filters_inclusive: [],
+      time_filter_active: false,
+      temp_filter: [],
+      temp_filter_inclusive: [],
     };
   }
+
+  // componentDidMount = () => {
+  //   this.setState({ data: this.props.tickets });
+  // }
 
   addFilter() {
     const currArr = this.state.filters;
     const newArr = currArr.concat(this.state.temp_filter);
     this.setState({ filters: newArr });
+    this.setState({ temp_filter_array: _.map(newArr, this.has) });
     this.setState({ temp_filter: '' });
   }
+  addFilterInclusive() {
+    const currArr = this.state.filters_inclusive;
+    const newArr = currArr.concat(this.state.temp_filter_inclusive);
+    this.setState({ filters_inclusive: newArr });
+    this.setState({ temp_filter_array_inclusive: _.map(newArr, this.has) });
+    this.setState({ temp_filter_inclusive: '' });
+  }
+
   clearFilter = () => this.setState({ filters: [] });
+  clearFilterInclusive = () => this.setState({ filters_inclusive: [] });
+
   getFilterInput = (event) => this.setState({ temp_filter: event.target.value.substr(0, 20) });
+  getFilterInputInclusive = (event) => this.setState({ temp_filter_inclusive: event.target.value.substr(0, 20) });
+
   getSearchInput = (event) => this.setState({ search: event.target.value.substr(0, 20) });
 
   handleChangeDataSearchField = (e, { name, value }) => this.setState({ [name]: value });
+
   handleChangeDateSearchField = (e, { name, value }) => this.setState({ [name]: value });
 
   handleChangeStart = (date) => this.setState({ date_start: date });
@@ -96,10 +125,23 @@ class ListTickets extends React.Component {
 
   has = (criteria) => function (value) { return _.contains(value, criteria); }
 
-  filtering = (arr) => {
-    if (arr.length > 0) {
+  filtering = (orgArr, coll) => {
+    if (orgArr.length > 0) {
+      const hasArr = this.state.temp_filter_array;
+      return _.filter(coll, function (t) {
+        return _.every(hasArr, function (currentFunction) {
+          return currentFunction(t);
+        });
+      });
+    }
+    return coll;
+  };
+
+  filteringInclusive = (orgArr) => {
+    if (orgArr.length > 0) {
+      const hasArr = this.state.temp_filter_array_inclusive;
       return _.filter(this.props.tickets, function (t) {
-        return _.some(arr, function (currentFunction) {
+        return _.some(hasArr, function (currentFunction) {
           return currentFunction(t);
         });
       });
@@ -107,7 +149,40 @@ class ListTickets extends React.Component {
     return this.props.tickets;
   };
 
-  lastMonth = () => this.setState({ date_end: moment().subtract(31, 'days') });
+  // filtering = () => {
+  //   const orgArr = this.state.temp_filter_array;
+  //   if (orgArr.length > 0) {
+  //     return _.filter(this.stae.tickets, function (t) {
+  //       return _.every(arr, function (currentFunction) {
+  //         return currentFunction(t);
+  //       });
+  //     });
+  //   }
+  //   return this.props.tickets;
+  // };
+
+  lastMonth() {
+    this.setState({ date_end: moment().subtract(31, 'days') });
+    this.setState({ time_filter_active: true });
+  }
+
+  lastWeek() {
+    this.setState({ date_end: moment().subtract(7, 'days') });
+    this.setState({ time_filter_active: true });
+  }
+
+  timeFilterOff = () => this.setState({ time_filter_active: false });
+
+  timeFilter(coll) {
+    const filterOn = this.state.time_filter_active;
+
+    if (filterOn) {
+      const field_to_query = this.state.search_date_field;
+      const end_date = this.state.date_end;
+      return coll.filter((t) => moment(t[field_to_query]).isAfter(end_date));
+    }
+    return coll;
+  }
 
 
   /** If the subscription(s) have been received, render the page, otherwise show a loading icon. */
@@ -124,20 +199,13 @@ class ListTickets extends React.Component {
     const b_created = this.state.b_created;
     const b_updated = this.state.b_updated;
     const f_list = this.state.filters;
-    const ff_list = _.map(f_list, this.has);
-    // const temp_f_list = this.state.temp_filter_array;
-    // const s_field = this.state.search_field;
-    // const s = this.state.search;
-    // const s_time = this.state.search_time;
-    // const filtered = _.filter(this.props.tickets, function (t) {
-    //   return _.some(f_list, function (currentFunction) {
-    //     return currentFunction(t);
-    //   });
-    // });
-    const filtered_s = this.filtering(ff_list);
-    // const filtered = this.filtering;
-    const searched = filtered_s.filter((t) => t[this.state.search_field].indexOf(this.state.search) !== -1);
-    const timeSearchTickets = searched.filter((t) => moment(t.createdOn).isBefore(this.state.date_start));
+    const f_list_inclusive = this.state.filters_inclusive;
+
+    const collFilteredInclusive = this.filteringInclusive(f_list_inclusive);
+    const collFiltered = this.filtering(f_list, collFilteredInclusive);
+    const collSearched = collFiltered.filter((t) => t[this.state.search_field].indexOf(this.state.search) !== -1);
+    // const timeSearchTickets = searched.filter((t) => moment(t.createdOn).isBefore(this.state.date_start));
+    const collTimeSearchTickets = this.timeFilter(collSearched);
     // const timeSearchTickets = searched.filter((t) => this.state.time_filters);
     // const searched = this.quickQuery(filtered, s_field, s);
 
@@ -200,10 +268,47 @@ class ListTickets extends React.Component {
               name='days31last'
               onClick={this.lastMonth}
             >
-              Last 31 Days
+              Last Month
+            </Menu.Item>
+            <Menu.Item
+                name='days07last'
+                onClick={this.lastWeek}
+            >
+              Last Week
+            </Menu.Item>
+            <Menu.Item
+                name='timeFilterOff'
+                onClick={this.timeFilterOff}
+            >
+              Time Filter Off
             </Menu.Item>
           </Menu>
-          <Header textAlign='center' as='h3'>Filters</Header>
+          <Header textAlign='center' as='h3' inverted>Inclusive Filters</Header>
+          <Menu>
+            <Form.Input
+                icon = 'search'
+                placeholder = ''
+                type = 'text'
+                value = {this.state.temp_filter_inclusive}
+                onChange = {this.getFilterInputInclusive}
+            />
+            <Menu.Item
+                name='addFilter'
+                onClick={this.addFilterInclusive}
+            >
+              Add Filter
+            </Menu.Item>
+            <Menu.Item
+                name='clearFilter'
+                onClick={this.clearFilterInclusive}
+            >
+              Clear Filter
+            </Menu.Item>
+          </Menu>
+          <List>
+            {f_list_inclusive.map((filter, index) => <Button key={index} content={filter}/>)}
+          </List>
+          <Header textAlign='center' as='h3' inverted>Exclusive Filters</Header>
           <Menu>
             <Form.Input
                 icon = 'search'
@@ -277,7 +382,7 @@ class ListTickets extends React.Component {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {timeSearchTickets.map((ticket, index) => <TicketAdmin key={index} ticket={ticket} />)}
+              {collTimeSearchTickets.map((ticket, index) => <TicketAdmin key={index} ticket={ticket} />)}
             </Table.Body>
             <Table.Footer fullWidth>
               <Table.Row>
