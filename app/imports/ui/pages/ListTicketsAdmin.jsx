@@ -36,6 +36,7 @@ class ListTickets extends React.Component {
     this.addFilterInclusive = this.addFilterInclusive.bind(this);
     this.clearFilter = this.clearFilter.bind(this);
     this.clearFilterInclusive = this.clearFilterInclusive.bind(this);
+    this.forSort = this.forSort.bind.(this);
     this.getFilterInput = this.getFilterInput.bind(this);
     this.getFilterInputInclusive = this.getFilterInputInclusive.bind(this);
     this.getSearchInput = this.getSearchInput.bind(this);
@@ -79,6 +80,8 @@ class ListTickets extends React.Component {
       time_filter_active: false,
       temp_filter: [],
       temp_filter_inclusive: [],
+      sorts: [],
+      temp_sorts: [],
     };
   }
 
