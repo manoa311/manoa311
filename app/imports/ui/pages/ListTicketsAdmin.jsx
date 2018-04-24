@@ -48,6 +48,10 @@ class ListTickets extends React.Component {
     this.has = this.has.bind(this);
     this.filtering = this.filtering.bind(this);
     this.lastMonth = this.lastMonth.bind(this);
+    this.lastWeek = this.lastWeek.bind(this);
+    this.timeFilter = this.timeFilter.bind(this);
+    this.timeFilterOff = this.timeFilterOff.bind(this);
+
 
     this.state = {
       b_building: false,
@@ -65,7 +69,7 @@ class ListTickets extends React.Component {
       filter_building: [this.has('Webster'), this.has('Sakamaki'), this.has('Critical')],
       filter_priority: [this.has('Regular')],
       filters: [],
-      time_filters: '',
+      time_filter_active: false,
       temp_filter: '',
       temp_filter_array: ['Regular'],
     };
@@ -77,6 +81,7 @@ class ListTickets extends React.Component {
     this.setState({ filters: newArr });
     this.setState({ temp_filter: '' });
   }
+
   clearFilter = () => this.setState({ filters: [] });
   getFilterInput = (event) => this.setState({ temp_filter: event.target.value.substr(0, 20) });
   getSearchInput = (event) => this.setState({ search: event.target.value.substr(0, 20) });
@@ -107,7 +112,29 @@ class ListTickets extends React.Component {
     return this.props.tickets;
   };
 
-  lastMonth = () => this.setState({ date_end: moment().subtract(31, 'days') });
+  // lastMonth = () => this.setState({ date_end: moment().subtract(31, 'days') });
+  lastMonth() {
+    this.setState({ date_end: moment().subtract(31, 'days') });
+    this.setState({ time_filter_active: true });
+  }
+
+  lastWeek() {
+    this.setState({ date_end: moment().subtract(7, 'days') });
+    this.setState({ time_filter_active: true });
+  }
+
+  timeFilterOff = () => this.setState({ time_filter_active: false });
+
+  timeFilter(coll) {
+    const filterOn = this.state.time_filter_active;
+
+    if (filterOn) {
+      const field_to_query = this.state.search_date_field;
+      const end_date = this.state.date_end;
+      return coll.filter((t) => moment(t[field_to_query]).isAfter(end_date));
+    }
+    return coll;
+  }
 
 
   /** If the subscription(s) have been received, render the page, otherwise show a loading icon. */
@@ -137,7 +164,8 @@ class ListTickets extends React.Component {
     const filtered_s = this.filtering(ff_list);
     // const filtered = this.filtering;
     const searched = filtered_s.filter((t) => t[this.state.search_field].indexOf(this.state.search) !== -1);
-    const timeSearchTickets = searched.filter((t) => moment(t.createdOn).isBefore(this.state.date_start));
+    // const timeSearchTickets = searched.filter((t) => moment(t.createdOn).isBefore(this.state.date_start));
+    const timeSearchTickets = this.timeFilter(searched);
     // const timeSearchTickets = searched.filter((t) => this.state.time_filters);
     // const searched = this.quickQuery(filtered, s_field, s);
 
@@ -200,7 +228,19 @@ class ListTickets extends React.Component {
               name='days31last'
               onClick={this.lastMonth}
             >
-              Last 31 Days
+              Last Month
+            </Menu.Item>
+            <Menu.Item
+                name='days07last'
+                onClick={this.lastWeek}
+            >
+              Last Week
+            </Menu.Item>
+            <Menu.Item
+                name='timeFilterOff'
+                onClick={this.timeFilterOff}
+            >
+              Time Filter Off
             </Menu.Item>
           </Menu>
           <Header textAlign='center' as='h3'>Filters</Header>
