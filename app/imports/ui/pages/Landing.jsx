@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import React from 'react';
-import { Table, Grid, Icon, Header } from 'semantic-ui-react';
+import { Table, Input, Dropdown, Menu } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
 
@@ -74,6 +74,43 @@ class Landing extends React.Component {
 
     return (
         <div className='background-landing'>
+          <Menu>
+            <Dropdown text='Sort By' pointing className='link item'>
+              <Dropdown.Menu>
+                <Dropdown.Item>
+                  <Dropdown text='Date Created'>
+                    <Dropdown.Menu>
+                      <Dropdown.Item>Today</Dropdown.Item>
+                      <Dropdown.Item>Yesterday</Dropdown.Item>
+                      <Dropdown.Item>This Week</Dropdown.Item>
+                      <Dropdown.Item>Last Week</Dropdown.Item>
+                      <Dropdown.Item>This Month</Dropdown.Item>
+                      <Dropdown.Item>Last Month</Dropdown.Item>
+                      <Dropdown.Item>This Year</Dropdown.Item>
+                      <Dropdown.Item>Last Year</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </Dropdown.Item>
+                <Dropdown.Item>
+                  <Dropdown text='Date Updated'>
+                    <Dropdown.Menu>
+                      <Dropdown.Item>Today</Dropdown.Item>
+                      <Dropdown.Item>Yesterday</Dropdown.Item>
+                      <Dropdown.Item>This Week</Dropdown.Item>
+                      <Dropdown.Item>Last Week</Dropdown.Item>
+                      <Dropdown.Item>This Month</Dropdown.Item>
+                      <Dropdown.Item>Last Month</Dropdown.Item>
+                      <Dropdown.Item>This Year</Dropdown.Item>
+                      <Dropdown.Item>Last Year</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+            <Menu.Item>
+              <Input icon='search' placeholder='Search tickets...' />
+            </Menu.Item>
+          </Menu>
           <Table sortable celled selectable fixed>
             <Table.Header>
               <Table.Row>
