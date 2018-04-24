@@ -147,7 +147,7 @@ ListTickets.propTypes = {
 /** withTracker connects Meteor data to React components. https://guide.meteor.com/react.html#using-withTracker */
 export default withTracker(() => {
   // Get access to Tickets documents.
-  const subscription = Meteor.subscribe('TicketsAdmin');
+  const subscription = Meteor.subscribe('MyTickets');
   return {
     tickets: Tickets.find({}, { sort: { createdOn: -1 } }).fetch(),
     ready: subscription.ready(),
