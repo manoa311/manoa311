@@ -63,14 +63,9 @@ class ListTickets extends React.Component {
     this.handleChangeDateSearchField = this.handleChangeDateSearchField.bind(this);
     this.handleChangeSortField = this.handleChangeSortField.bind(this);
     this.handleChangeSortOrder = this.handleChangeSortOrder.bind(this);
+    this.handleChangeDropDown = this.handleChangeDropDown.bind(this);
     this.handleChangeStart = this.handleChangeStart.bind(this);
     this.handleChangeEnd = this.handleChangeEnd.bind(this);
-    this.handleClickBuilding = this.handleClickBuilding.bind(this);
-    this.handleClickRoom = this.handleClickRoom.bind(this);
-    this.handleClickPriority = this.handleClickPriority.bind(this);
-    this.handleClickStatus = this.handleClickStatus.bind(this);
-    this.handleClickCreated = this.handleClickCreated.bind(this);
-    this.handleClickUpdated = this.handleClickUpdated.bind(this);
     this.has = this.has.bind(this);
     this.filtering = this.filtering.bind(this);
     this.lastMonth = this.lastMonth.bind(this);
@@ -79,12 +74,6 @@ class ListTickets extends React.Component {
     this.timeFilterOff = this.timeFilterOff.bind(this);
 
     this.state = {
-      b_building: false,
-      b_room: false,
-      b_priority: false,
-      b_status: false,
-      b_created: false,
-      b_updated: false,
       data: [],
       search: '',
       search_field: 'building',
@@ -159,17 +148,10 @@ class ListTickets extends React.Component {
 
   handleChangeSortField = (e, { name, value }) => this.setState({ [name]: value });
   handleChangeSortOrder = (e, { name, value }) => this.setState({ [name]: value });
-
-
+  handleChangeDropDown = (e, { name, value }) => this.setState({ [name]: value });
+  
   handleChangeStart = (date) => this.setState({ date_start: date });
   handleChangeEnd = (date) => this.setState({ date_end: date });
-
-  handleClickBuilding = () => this.setState({ b_building: !this.state.b_building });
-  handleClickRoom = () => this.setState({ b_room: !this.state.b_room });
-  handleClickPriority = () => this.setState({ b_priority: !this.state.b_priority });
-  handleClickStatus = () => this.setState({ b_status: !this.state.b_status });
-  handleClickCreated = () => this.setState({ b_created: !this.state.b_created });
-  handleClickUpdated = () => this.setState({ b_updated: !this.state.b_updated });
 
   has = (criteria) => function (value) { return _.includes(value, criteria); }
 
@@ -240,12 +222,6 @@ class ListTickets extends React.Component {
 
   /** Render the page once subscriptions have been received. */
   renderPage() {
-    const b_building = this.state.b_building;
-    const b_room = this.state.b_room;
-    const b_priority = this.state.b_priority;
-    const b_status = this.state.b_status;
-    const b_created = this.state.b_created;
-    const b_updated = this.state.b_updated;
     const f_list = this.state.filters;
     const f_list_inclusive = this.state.filters_inclusive;
     const s_list = _.zip(this.state.sort_fields, this.state.sort_orders);
@@ -386,7 +362,7 @@ class ListTickets extends React.Component {
                 placeholder = 'Sort Fields'
                 options = {dbAllFields}
                 value = {this.state.temp_sort_field}
-                onChange = {this.handleChangeSortField}
+                onChange = {this.handleChangeDropDown}
             />
             <Dropdown
                 button
@@ -395,7 +371,7 @@ class ListTickets extends React.Component {
                 placeholder = 'Sort Order'
                 options = {sortOrder}
                 value = {this.state.temp_sort_order}
-                onChange = {this.handleChangeSortOrder}
+                onChange = {this.handleChangeDropDown }
             />
             <Menu.Item
                 name='addSort'
@@ -419,45 +395,30 @@ class ListTickets extends React.Component {
                 <Table.HeaderCell>Select</Table.HeaderCell>
                 <Table.HeaderCell>
                   Building
-                  <Button compact size='mini' toggle active={b_building} onClick={this.handleClickBuilding}>
-                    <Icon name='sort content descending'/>
-                  </Button>
                 </Table.HeaderCell>
                 <Table.HeaderCell>
                   Floor
                 </Table.HeaderCell>
                 <Table.HeaderCell>
                   Room
-                  <Button compact size='mini' toggle active={b_room} onClick={this.handleClickRoom}>
-                    <Icon name='sort content descending'/>
-                  </Button>
                 </Table.HeaderCell>
                 <Table.HeaderCell>
                   Priority
-                  <Button compact size='mini' toggle active={b_priority} onClick={this.handleClickPriority}>
-                    <Icon name='sort content descending'/>
-                  </Button>
                 </Table.HeaderCell>
                 <Table.HeaderCell>
                   Description
                 </Table.HeaderCell>
                 <Table.HeaderCell>
                   Ticket Status
-                  <Button compact size='mini' toggle active={b_status} onClick={this.handleClickStatus}>
-                    <Icon name='sort content descending'/>
-                  </Button>
+                </Table.HeaderCell>
+                <Table.HeaderCell>
+                  Votes
                 </Table.HeaderCell>
                 <Table.HeaderCell>
                   Date Created
-                  <Button compact size='mini' toggle active={b_created} onClick={this.handleClickCreated}>
-                    <Icon name='sort content descending'/>
-                  </Button>
                 </Table.HeaderCell>
                 <Table.HeaderCell>
                   Date Updated
-                  <Button compact size='mini' toggle active={b_updated} onClick={this.handleClickUpdated}>
-                    <Icon name='sort content descending'/>
-                  </Button>
                 </Table.HeaderCell>
               </Table.Row>
             </Table.Header>
