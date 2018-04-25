@@ -59,10 +59,6 @@ class ListTickets extends React.Component {
     this.getFilterInput = this.getFilterInput.bind(this);
     this.getFilterInputInclusive = this.getFilterInputInclusive.bind(this);
     this.getSearchInput = this.getSearchInput.bind(this);
-    this.handleChangeDataSearchField = this.handleChangeDataSearchField.bind(this);
-    this.handleChangeDateSearchField = this.handleChangeDateSearchField.bind(this);
-    this.handleChangeSortField = this.handleChangeSortField.bind(this);
-    this.handleChangeSortOrder = this.handleChangeSortOrder.bind(this);
     this.handleChangeDropDown = this.handleChangeDropDown.bind(this);
     this.handleChangeStart = this.handleChangeStart.bind(this);
     this.handleChangeEnd = this.handleChangeEnd.bind(this);
@@ -142,14 +138,8 @@ class ListTickets extends React.Component {
 
   getSearchInput = (event) => this.setState({ search: event.target.value.substr(0, 20) });
 
-  handleChangeDataSearchField = (e, { name, value }) => this.setState({ [name]: value });
-
-  handleChangeDateSearchField = (e, { name, value }) => this.setState({ [name]: value });
-
-  handleChangeSortField = (e, { name, value }) => this.setState({ [name]: value });
-  handleChangeSortOrder = (e, { name, value }) => this.setState({ [name]: value });
   handleChangeDropDown = (e, { name, value }) => this.setState({ [name]: value });
-  
+
   handleChangeStart = (date) => this.setState({ date_start: date });
   handleChangeEnd = (date) => this.setState({ date_end: date });
 
@@ -245,7 +235,7 @@ class ListTickets extends React.Component {
                   placeholder = 'Search Fields'
                   options = {dbDataFields}
                   value = {this.state.search_field}
-                  onChange = {this.handleChangeDataSearchField}
+                  onChange = {this.handleChangeDropDown}
               />
               <Form.Input
                   icon = 'search'
@@ -263,7 +253,7 @@ class ListTickets extends React.Component {
                   placeholder = 'Date Field To Query'
                   options = {dbDateFields}
                   value = {this.state.search_date_field}
-                  onChange = {this.handleChangeDateSearchField}
+                  onChange = {this.handleChangeDropDown}
               />
               <DatePicker
                   showYearDropdown
