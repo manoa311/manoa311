@@ -128,7 +128,7 @@ export default withTracker(({ match }) => {
   // Get the documentID from the URL field. See imports/ui/layouts/App.jsx for the route containing :_id.
   const documentId = match.params._id;
   // Get access to Contacts documents.
-  const subscription = Meteor.subscribe('Tickets');
+  const subscription = Meteor.subscribe('TicketsAll');
   return {
     doc: Tickets.findOne(documentId),
     ticket: Tickets.findOne(documentId),

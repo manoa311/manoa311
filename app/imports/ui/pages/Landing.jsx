@@ -6,6 +6,7 @@ import { Tickets } from '/imports/api/ticket/ticket';
 import { withTracker } from 'meteor/react-meteor-data';
 /** import { Link } from 'react-router-dom'; */
 import TicketAdmin from '/imports/ui/components/TicketAdmin';
+import Ticket from '/imports/ui/components/Ticket';
 import DatePicker from 'react-datepicker';
 import moment from 'moment/moment';
 import PropTypes from 'prop-types';
@@ -349,7 +350,7 @@ class Landing extends React.Component {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {collTimeSearchTickets.map((ticket, index) => <TicketAdmin key={index} ticket={ticket} />)}
+              {collTimeSearchTickets.map((ticket, index) => <Ticket key={index} ticket={ticket} />)}
             </Table.Body>
           </Table>
         </div>
@@ -366,7 +367,7 @@ Landing.propTypes = {
 /** withTracker connects Meteor data to React components. https://guide.meteor.com/react.html#using-withTracker */
 export default withTracker(() => {
   // Get access to Tickets documents.
-  const subscription = Meteor.subscribe('TicketsAdmin');
+  const subscription = Meteor.subscribe('TicketsAll');
   return {
     tickets: Tickets.find({}, { sort: { createdOn: -1 } }).fetch(),
     ready: subscription.ready(),
