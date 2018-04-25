@@ -49,3 +49,7 @@ Meteor.publish('TicketsAdminNew', function publish() {
   }
   return this.ready();
 });
+
+Meteor.publish('TicketsAll', function publish() {
+  return Tickets.find();
+})
