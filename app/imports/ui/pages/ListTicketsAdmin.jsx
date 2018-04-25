@@ -23,24 +23,6 @@ const dbAllFields = [
   { key: 9, value: 'updatedOn', text: 'updatedOn' },
 ];
 
-const dbDataFields = [
-  { key: 'building', value: 'building', text: 'building' },
-  { key: 'description', value: 'description', text: 'description' },
-  { key: 'floor', value: 'floor', text: 'floor' },
-  { key: 'owner', value: 'owner', text: 'owner' },
-  { key: 'priority', value: 'priority', text: 'priority' },
-  { key: 'room', value: 'room', text: 'room' },
-  { key: 'status', value: 'status', text: 'status' },
-  { key: 'votes', value: 'votes', text: 'votes' },
-  { key: 'createdOn', value: 'createdOn', text: 'createdOn' },
-  { key: 'updatedOn', value: 'updatedOn', text: 'updatedOn' },
-];
-
-const dbDateFields = [
-  { key: 'createdOn', value: 'createdOn', text: 'createdOn' },
-  { key: 'updatedOn', value: 'updatedOn', text: 'updatedOn' },
-];
-
 const sortOrder = [
   { key: 'ascending', value: 'asc', text: 'Ascending' },
   { key: 'descending', value: 'desc', text: 'Descending' },
@@ -233,7 +215,7 @@ class ListTickets extends React.Component {
                   name = 'search_field'
                   type = 'text'
                   placeholder = 'Search Fields'
-                  options = {dbDataFields}
+                  options = {_.filter(dbAllFields, (i) => i.key < 8)}
                   value = {this.state.search_field}
                   onChange = {this.handleChangeDropDown}
               />
@@ -251,7 +233,7 @@ class ListTickets extends React.Component {
                   name = 'search_date_field'
                   type = 'text'
                   placeholder = 'Date Field To Query'
-                  options = {dbDateFields}
+                  options = {_.filter(dbAllFields, (i) => i.key > 7)}
                   value = {this.state.search_date_field}
                   onChange = {this.handleChangeDropDown}
               />
