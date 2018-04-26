@@ -365,7 +365,6 @@ class ListTickets extends React.Component {
           <Table compact striped>
             <Table.Header>
               <Table.Row>
-                <Table.HeaderCell>Select</Table.HeaderCell>
                 <Table.HeaderCell>
                   Building
                 </Table.HeaderCell>

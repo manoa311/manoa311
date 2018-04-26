@@ -17,7 +17,6 @@ import Signin from '../pages/Signin';
 import Signup from '../pages/Signup';
 import Signout from '../pages/Signout';
 import ListTicketsAdmin from '../pages/ListTicketsAdmin';
-import ListTicketsAdminNewOnly from '../pages/ListTicketsAdminNewOnly';
 import MyTickets from '../pages/MyTickets';
 
 
@@ -36,7 +35,6 @@ class App extends React.Component {
               <ProtectedRoute path="/add" component={AddContact}/>
               <ProtectedRoute path="/edit/:_id" component={EditContact}/>
               <ProtectedRoute path="/view/:_id" component={ViewTicket}/>
-              <AdminProtectedRoute path="/admin-ticket-new" component={ListTicketsAdminNewOnly}/>
               <AdminProtectedRoute path="/admin-ticket" component={ListTicketsAdmin}/>
               <ProtectedRoute path="/my-tickets" component={MyTickets}/>
               <ProtectedRoute path="/signout" component={Signout}/>
