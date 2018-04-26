@@ -57,7 +57,19 @@ class TicketAdmin extends React.Component {
     // return updateAction;
     // Tickets.update(this.props.ticket._id, { $set: { status: 'Cancelled' } }, this.cancelCallback);
     // Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
-    console.log(value);
+    switch (value) {
+      case 'ticketStatusCancelled':
+        Tickets.update(this.props.ticket._id, { $set: { status: 'Cancelled' } }, this.cancelCallback);
+        Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
+        break;
+      case 'ticketStatusDone':
+        Tickets.update(this.props.ticket._id, { $set: { status: 'Done' } });
+        Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
+        break;
+      default:
+        console.log(`${name}: ${value} is not a valid command`);
+    }
+
   }
 
   /** On submit, insert the data. */
@@ -68,15 +80,15 @@ class TicketAdmin extends React.Component {
     }
   }
 
-  ticketStatusCancelled() {
-    Tickets.update(this.props.ticket._id, { $set: { status: 'Cancelled' } }, this.cancelCallback);
-    Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
-  }
-
-  ticketStatusDone() {
-    Tickets.update(this.props.ticket._id, { $set: { status: 'Done' } });
-    Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
-  }
+  // ticketStatusCancelled() {
+  //   Tickets.update(this.props.ticket._id, { $set: { status: 'Cancelled' } }, this.cancelCallback);
+  //   Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
+  // }
+  //
+  // ticketStatusDone() {
+  //   Tickets.update(this.props.ticket._id, { $set: { status: 'Done' } });
+  //   Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
+  // }
 
 
   render() {
