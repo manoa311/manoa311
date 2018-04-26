@@ -16,9 +16,6 @@ class TicketAdmin extends React.Component {
 
     return (
         <Table.Row style={{ backgroundColor: assignRowBackgroundColor(this.props.ticket.priority) }}>
-          <Table.Cell collapsing textAlign="center">
-            <Checkbox fitted />
-          </Table.Cell>
           <Table.Cell>{this.props.ticket.building}</Table.Cell>
           <Table.Cell>{this.props.ticket.floor}</Table.Cell>
           <Table.Cell>{this.props.ticket.room}</Table.Cell>

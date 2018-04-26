@@ -127,18 +127,6 @@ class ListTickets extends React.Component {
 
   has = (criteria) => function (value) { return _.includes(value, criteria); }
 
-  filtering = (orgArr, coll) => {
-    if (orgArr.length > 0) {
-      const hasArr = this.state.temp_filter_array;
-      return _.filter(coll, function (t) {
-        return _.every(hasArr, function (currentFunction) {
-          return currentFunction(t);
-        });
-      });
-    }
-    return coll;
-  };
-
   filteringInclusive = (orgArr) => {
     if (orgArr.length > 0) {
       const hasArr = this.state.temp_filter_array_inclusive;
@@ -149,6 +137,19 @@ class ListTickets extends React.Component {
       });
     }
     return this.props.tickets;
+  };
+
+
+  filtering = (orgArr, coll) => {
+    if (orgArr.length > 0) {
+      const hasArr = this.state.temp_filter_array;
+      return _.filter(coll, function (t) {
+        return _.every(hasArr, function (currentFunction) {
+          return currentFunction(t);
+        });
+      });
+    }
+    return coll;
   };
 
   // filtering = () => {
@@ -364,7 +365,6 @@ class ListTickets extends React.Component {
           <Table compact striped>
             <Table.Header>
               <Table.Row>
-                <Table.HeaderCell>Select</Table.HeaderCell>
                 <Table.HeaderCell>
                   Building
                 </Table.HeaderCell>
