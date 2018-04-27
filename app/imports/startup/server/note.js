@@ -9,3 +9,7 @@ Meteor.publish('Notes', function publish() {
   }
   return this.ready();
 });
+
+Meteor.publish('NotesAll', function publish() {
+  return Notes.find();
+})
