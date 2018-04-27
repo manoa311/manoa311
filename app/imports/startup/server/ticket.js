@@ -17,6 +17,7 @@ if (Tickets.find().count() === 0) {
 }
 
 /** This subscription publishes only the documents associated with the logged in user */
+/** unsure if this is necessary */
 Meteor.publish('Tickets', function publish() {
   if (this.userId) {
     const username = Meteor.users.findOne(this.userId).username;
@@ -27,6 +28,15 @@ Meteor.publish('Tickets', function publish() {
 
 /** This subscription publishes all tickets belonging to the currently logged in user */
 Meteor.publish('MyTickets', function publish() {
+  if (this.userId) {
+    const username = Meteor.users.findOne(this.userId).username;
+    return Tickets.find({ owner: username });
+  }
+  return this.ready();
+});
+
+/** This subscription publishes all unresolved tickets, regardless of user*/
+Meteor.publish('UnresolvedTickets', function publish() {
   if (this.userId) {
     const username = Meteor.users.findOne(this.userId).username;
     return Tickets.find({ owner: username });
@@ -50,6 +60,7 @@ Meteor.publish('TicketsAdminNew', function publish() {
   return this.ready();
 });
 
+/** This subscription publishes all tickets */
 Meteor.publish('TicketsAll', function publish() {
   return Tickets.find();
 });
