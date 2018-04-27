@@ -96,7 +96,7 @@ class ViewTicket extends React.Component {
             <Segment>
               Comments
               <Feed>
-                {this.props.notes.map((note, index) => <Note key={index} note={note.contactId === this.props.ticket._id}/>)}
+                {this.props.notes.map((note, index) => <Note key={index} note={note}/>)}
               </Feed>
             </Segment>
             <Segment>
@@ -129,10 +129,11 @@ export default withTracker(({ match }) => {
   const documentId = match.params._id;
   // Get access to Contacts documents.
   const subscription = Meteor.subscribe('TicketsAll');
+  const subscription2 = Meteor.subscribe('NotesAll');
   return {
     doc: Tickets.findOne(documentId),
     ticket: Tickets.findOne(documentId),
-    ready: subscription.ready(),
-    notes: Notes.find({}).fetch(),
+    ready: (subscription.ready() && subscription2.ready()),
+    notes: Notes.find({contactId: documentId}).fetch(),
   };
 })(ViewTicket);
