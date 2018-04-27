@@ -49,6 +49,8 @@ class ListTickets extends React.Component {
     const b_created = this.state.b_created;
     const b_updated = this.state.b_updated;
 
+    const tableStyle = { fontFamily: 'Trebuchet MS' };
+
     return (
         <Container>
           <Header as="h2" textAlign="center" inverted>List of My Tickets</Header>
@@ -57,7 +59,7 @@ class ListTickets extends React.Component {
               <Input icon='search' placeholder='Search tickets...' />
             </Menu.Item>
           </Menu>
-          <Table compact striped>
+          <Table style={tableStyle} compact striped>
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell>Select</Table.HeaderCell>

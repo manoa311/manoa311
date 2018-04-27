@@ -3,21 +3,29 @@ import PropTypes from 'prop-types';
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 import { withRouter, NavLink } from 'react-router-dom';
-import { Menu, Dropdown, Header } from 'semantic-ui-react';
+import { Menu, Dropdown, Image } from 'semantic-ui-react';
 import { Roles } from 'meteor/alanning:roles';
 
 /** The NavBar appears at the top of every page. Rendered by the App Layout component. */
 class NavBar extends React.Component {
+
+  state = { activeItem: 'landing' }
+
+  handleItemClick = (e, { name }) => this.setState({ activeItem: name })
+
   render() {
-    const menuStyle = { marginBottom: '10px', backgroundColor: '#024731' };
+    const menuStyle = { marginBottom: '10px', backgroundColor: '#024731', fontFamily: 'Trebuchet MS' };
+
+    const { activeItem } = this.state
+
     return (
-      <Menu style={menuStyle} attached="top" borderless inverted>
-        <Menu.Item as={NavLink} activeClassName="" exact to="/">
-          <Header inverted as='h1'>Manoa 311</Header>
+      <Menu style={menuStyle} attached="top" inverted tabular>
+        <Menu.Item name='landing' active={activeItem === 'landing'} onClick={this.handleItemClick} as={NavLink} activeClassName="" exact to="/">
+          <Image src='/images/manoa311logo.png' size='medium'/>
         </Menu.Item>
         {this.props.currentUser ? (
-            [<Menu.Item as={NavLink} activeClassName="active" exact to="/add" key='add'>Add Ticket</Menu.Item>,
-              <Menu.Item as={NavLink} activeClassName="active" exact to="/my-tickets" key='my-ticket'>
+            [<Menu.Item name='addTicket' active={activeItem === 'addTicket'} onClick={this.handleItemClick} as={NavLink} activeClassName="active" exact to="/add" key='add'>Add Ticket</Menu.Item>,
+              <Menu.Item name='myTicket' active={activeItem === 'myTicket'} onClick={this.handleItemClick} as={NavLink} activeClassName="active" exact to="/my-tickets" key='my-ticket'>
                 My Tickets
             </Menu.Item>]
         ) : ''}

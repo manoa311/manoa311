@@ -16,8 +16,10 @@ class Ticket extends React.Component {
       return bgColors[priorityLevel];
     };
 
+    const tableStyle = { fontFamily: 'Trebuchet MS', backgroundColor: assignRowBackgroundColor(this.props.ticket.priority) };
+
     return (
-        <Table.Row style={{backgroundColor: assignRowBackgroundColor(this.props.ticket.priority)}}>
+        <Table.Row style={tableStyle}>
           <Link to={`/view/${this.props.ticket._id}`}><Table.Cell>{this.props.ticket.building}</Table.Cell></Link>
           <Table.Cell>{this.props.ticket.floor}</Table.Cell>
           <Table.Cell>{this.props.ticket.room}</Table.Cell>
