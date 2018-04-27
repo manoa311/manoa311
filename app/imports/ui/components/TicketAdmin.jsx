@@ -68,7 +68,7 @@ class TicketAdmin extends React.Component {
         Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
         break;
       default:
-        Bert.alert({ type: 'danger', message: `Not A Valid Option!` });
+        Bert.alert({ type: 'danger', message: `${value} from ${name} is NOT A Valid Option!` });
     }
 
   }
@@ -111,7 +111,7 @@ class TicketAdmin extends React.Component {
           <Table.Cell>{this.props.ticket.description}</Table.Cell>
           <Table.Cell>{this.props.ticket.votes}</Table.Cell>
           <Table.Cell>{this.props.ticket.createdOn.toLocaleDateString('en-US')}</Table.Cell>
-          <Table.Cell>{this.updatedOnStatus()}</Table.Cell>
+          <Table.Cell>{this.updatedOnStatus}</Table.Cell>
           <Table.Cell>
             <Menu>
               <Menu.Item>
