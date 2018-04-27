@@ -14,7 +14,7 @@ class Ticket extends React.Component {
   constructor(props) {
     super(props)
     this.state ={
-      logCount: 0,
+      logCount: this.props.ticket.votes,
       voted: false,
     };
     this.handleUp = this.handleUp.bind(this);

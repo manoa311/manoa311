@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Grid, Loader, Header, Segment, Button, Icon, Feed } from 'semantic-ui-react';
+import { Table, Grid, Loader, Header, Segment, Button, Icon, Feed, Label } from 'semantic-ui-react';
 import { Tickets, TicketSchema } from '/imports/api/ticket/ticket';
 import { Bert } from 'meteor/themeteorchef:bert';
 import { Meteor } from 'meteor/meteor';
@@ -13,6 +13,36 @@ import { Notes } from '/imports/api/note/note';
 /** Renders the Page for editing a single document. */
 class ViewTicket extends React.Component {
 
+  constructor(props) {
+    super(props)
+    this.state ={
+      logCount: this.props.ticket.votes,
+      voted: false,
+    };
+    this.handleUp = this.handleUp.bind(this);
+  }
+
+  handleUp = () => {
+    if (!this.state.voted) {
+      this.setState((prevState) => {
+        return {
+          logCount: prevState.logCount + 1,
+          voted: true,
+        }
+      })
+    }
+  };
+
+  handleDown = () => {
+    if (!this.state.voted) {
+      this.setState((prevState) => {
+        return {
+          logCount: prevState.logCount - 1,
+          voted: true,
+        }
+      })
+    }
+  };
 
   /** If the subscription(s) have been received, render the page, otherwise show a loading icon. */
   render() {
@@ -21,7 +51,11 @@ class ViewTicket extends React.Component {
 
   /** Render the form. Use Uniforms: https://github.com/vazco/uniforms */
   renderPage() {
+
+    const { logCount } = this.state;
+
     return (
+
         <Grid container centered>
           <Grid.Column>
             <Header as="h2" textAlign="center">Ticket ####</Header>
@@ -92,8 +126,9 @@ class ViewTicket extends React.Component {
                   Some long description of the problem
                 </Table.Row>
               </Table>
-              <Button><Icon className='thumbs up'/></Button>
-              <Button><Icon className='thumbs down'/></Button>
+              <Button onClick={this.handleUp}><Icon className='angle up'/></Button>
+              <Button onClick={this.handleDown}><Icon className='angle down'/></Button>
+              <Label circular>{logCount}</Label>
               <Button floated='right'><Icon className='star'/></Button>
               <Button floated='right'><Icon className='exclamation'/></Button>
             </Segment>
