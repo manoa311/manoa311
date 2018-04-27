@@ -14,8 +14,8 @@ const bgColors = {
 };
 
 const updateOptions = [
-  { key: 0, value: 'ticketStatusDone', text: 'Job Done' },
-  { key: 1, value: 'ticketStatusCancelled', text: 'Cancel Ticket' },
+  { key: 0, value: 'Resolved', text: 'Job Resolved' },
+  { key: 1, value: 'Cancelled', text: 'Cancel Ticket' },
 ];
 
 
@@ -25,12 +25,10 @@ class TicketAdmin extends React.Component {
     super(props);
     this.handleChangeDropDown = this.handleChangeDropDown.bind(this);
     this.onClick = this.onClick.bind(this);
-    // this.ticketStatusCancelled = this.ticketStatusCancelled.bind(this);
-    // this.ticketStatusDone = this.ticketStatusDone.bind(this);
 
-    this.state = {
-      update_status: '',
-    };
+    // this.state = {
+    //   update_status: '',
+    // };
   }
 
 
@@ -51,26 +49,19 @@ class TicketAdmin extends React.Component {
       Bert.alert({ type: 'success', message: 'Delete Succeeded' });
     }
   }
-
-  handleChangeDropDown = (e, { name, value }) => {
-    // this.setState({ [name]: value });
-    // const updateAction = () => this.value;
-    // return updateAction;
-    // Tickets.update(this.props.ticket._id, { $set: { status: 'Cancelled' } }, this.cancelCallback);
-    // Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
-    switch (value) {
-      case 'ticketStatusCancelled':
-        Tickets.update(this.props.ticket._id, { $set: { status: 'Cancelled' } }, this.cancelCallback);
-        Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
-        break;
-      case 'ticketStatusDone':
-        Tickets.update(this.props.ticket._id, { $set: { status: 'Resolved' } });
-        Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
-        break;
-      default:
-        Bert.alert({ type: 'danger', message: `Not A Valid Option!` });
+  handleChangeDropDownCallback(value, error) {
+    if (error) {
+      Bert.alert({ type: 'danger', message: `Cancel Update Status Failed: ${error.message}` });
+    } else {
+      Bert.alert({ type: 'success', message: `Success! Ticket Status Updated to ${value}` });
     }
+  }
 
+
+  handleChangeDropDown = (e, { value }) => {
+    const val = value;
+    Tickets.update(this.props.ticket._id, { $set: { status: value } }, this.handleChangeDropDownCallback(val));
+    Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
   }
 
   /** On submit, insert the data. */
@@ -80,16 +71,6 @@ class TicketAdmin extends React.Component {
       Tickets.remove(this.props.ticket._id, this.deleteCallback);
     }
   }
-
-  // ticketStatusCancelled() {
-  //   Tickets.update(this.props.ticket._id, { $set: { status: 'Cancelled' } }, this.cancelCallback);
-  //   Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
-  // }
-  //
-  // ticketStatusDone() {
-  //   Tickets.update(this.props.ticket._id, { $set: { status: 'Done' } });
-  //   Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
-  // }
 
   updatedOnStatus = () => {
     if (this.props.ticket.createdOn.getTime() === this.props.ticket.updatedOn.getTime()) {
@@ -119,7 +100,7 @@ class TicketAdmin extends React.Component {
                     button
                     name = 'update_status'
                     type = 'text'
-                    placeholder = 'Update Staus'
+                    placeholder = 'Update Status'
                     options = {updateOptions}
                     // value = {this.state.update_status}
                     onChange = {this.handleChangeDropDown}
