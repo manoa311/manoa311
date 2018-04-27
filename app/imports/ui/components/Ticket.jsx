@@ -61,8 +61,16 @@ class Ticket extends React.Component {
           <Table.Cell>{this.props.ticket.priority}</Table.Cell>
           <Table.Cell>{this.props.ticket.description}</Table.Cell>
           <Table.Cell>{this.props.ticket.status}</Table.Cell>
-          <Table.Cell>{this.props.ticket.createdOn.toLocaleDateString('en-US')}</Table.Cell>
-          <Table.Cell>{this.props.ticket.updatedOn.toLocaleDateString('en-US')}</Table.Cell>
+          <Table.Cell>
+            {this.props.ticket.createdOn.toLocaleDateString('en-US')}
+            <p/>
+            {this.props.ticket.createdOn.toLocaleTimeString('en-US')}
+            </Table.Cell>
+          <Table.Cell>
+            {this.props.ticket.updatedOn.toLocaleDateString('en-US')}
+            <p/>
+            {this.props.ticket.updatedOn.toLocaleTimeString('en-US')}
+            </Table.Cell>
         </Table.Row>
     );
   }

@@ -75,9 +75,13 @@ class ViewTicket extends React.Component {
                 </Table.Cell>
                 <Table.Cell>
                   {this.props.ticket.createdOn.toLocaleDateString('en-US')}
+                  <p/>
+                  {this.props.ticket.createdOn.toLocaleTimeString('en-US')}
                 </Table.Cell>
                 <Table.Cell>
                   {this.props.ticket.updatedOn.toLocaleDateString('en-US')}
+                  <p/>
+                  {this.props.ticket.updatedOn.toLocaleTimeString('en-US')}
                 </Table.Cell>
               </Table.Body>
             </Table>
