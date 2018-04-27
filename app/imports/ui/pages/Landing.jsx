@@ -248,9 +248,11 @@ class Landing extends React.Component {
 
     const collTimeSearchTickets = this.timeFilter(collSearched);
 
+    const menuStyle = { fontFamily: 'Trebuchet MS' };
+
     return (
         <div className='background-landing'>
-          <Menu>
+          <Menu style={menuStyle} >
             <Dropdown text='Sort By' pointing className='link item'>
               <Dropdown.Menu>
                 <Dropdown.Item>
