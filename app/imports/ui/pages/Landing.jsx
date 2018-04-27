@@ -308,6 +308,9 @@ class Landing extends React.Component {
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell>
+                  Vote
+                </Table.HeaderCell>
+                <Table.HeaderCell>
                   Building
                   <Button compact size='mini' toggle active={b_building} onClick={this.handleClickBuilding}>
                     <Icon name='sort content descending'/>

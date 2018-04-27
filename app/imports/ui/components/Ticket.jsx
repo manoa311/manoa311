@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table } from 'semantic-ui-react';
+import { Table, Button, Label, Icon } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
 
@@ -11,6 +11,37 @@ const bgColors = {
 
 /** Renders a single row in the List Contacts Admin table. See pages/ListContacts.jsx. */
 class Ticket extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state ={
+      logCount: 0,
+      voted: false,
+    };
+    this.handleUp = this.handleUp.bind(this);
+  }
+
+  handleUp = () => {
+    if (!this.state.voted) {
+      this.setState((prevState) => {
+        return {
+          logCount: prevState.logCount + 1,
+          voted: true,
+        }
+      })
+    }
+  };
+
+  handleDown = () => {
+    if (!this.state.voted) {
+      this.setState((prevState) => {
+        return {
+          logCount: prevState.logCount - 1,
+          voted: true,
+        }
+      })
+    }
+  };
+
   render() {
     const assignRowBackgroundColor = (priorityLevel) => {
       return bgColors[priorityLevel];
@@ -18,8 +49,12 @@ class Ticket extends React.Component {
 
     const tableStyle = { fontFamily: 'Trebuchet MS', backgroundColor: assignRowBackgroundColor(this.props.ticket.priority) };
 
+    const { logCount } = this.state;
+    const { data } = this.props;
     return (
         <Table.Row style={tableStyle}>
+          <Table.Cell collapsing selectable><Button.Group basic><Button onClick={this.handleUp} icon><Icon name = 'angle up' /> </Button>
+            <Button negative={open} onClick={this.handleDown} icon><Icon name = 'angle down' /></Button> </Button.Group><Label circular>{logCount}</Label> </Table.Cell>
           <Link to={`/view/${this.props.ticket._id}`}><Table.Cell>{this.props.ticket.building}</Table.Cell></Link>
           <Table.Cell>{this.props.ticket.floor}</Table.Cell>
           <Table.Cell>{this.props.ticket.room}</Table.Cell>
