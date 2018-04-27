@@ -366,6 +366,12 @@ class ListTickets extends React.Component {
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell>
+                  Priority
+                </Table.HeaderCell>
+                <Table.HeaderCell>
+                  Ticket Status
+                </Table.HeaderCell>
+                <Table.HeaderCell>
                   Building
                 </Table.HeaderCell>
                 <Table.HeaderCell>
@@ -375,13 +381,7 @@ class ListTickets extends React.Component {
                   Room
                 </Table.HeaderCell>
                 <Table.HeaderCell>
-                  Priority
-                </Table.HeaderCell>
-                <Table.HeaderCell>
                   Description
-                </Table.HeaderCell>
-                <Table.HeaderCell>
-                  Ticket Status
                 </Table.HeaderCell>
                 <Table.HeaderCell>
                   Votes

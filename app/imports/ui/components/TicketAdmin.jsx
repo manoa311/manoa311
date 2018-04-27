@@ -9,7 +9,8 @@ import moment from 'moment';
 
 const bgColors = {
   Urgent: '#E9573F',
-  Regular: '#F6BB42',
+  Emergency: '#0cff89',
+  Normal: '#F6BB42',
 };
 
 const updateOptions = [
@@ -63,11 +64,11 @@ class TicketAdmin extends React.Component {
         Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
         break;
       case 'ticketStatusDone':
-        Tickets.update(this.props.ticket._id, { $set: { status: 'Done' } });
+        Tickets.update(this.props.ticket._id, { $set: { status: 'Resolved' } });
         Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
         break;
       default:
-        console.log(`${name}: ${value} is not a valid command`);
+        Bert.alert({ type: 'danger', message: `Not A Valid Option!` });
     }
 
   }
@@ -90,21 +91,27 @@ class TicketAdmin extends React.Component {
   //   Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
   // }
 
+  updatedOnStatus = () => {
+    if (this.props.ticket.createdOn.getTime() === this.props.ticket.updatedOn.getTime()) {
+      return 'No Update';
+    }
+      return this.props.ticket.updatedOn.toLocaleDateString('en-US');
+  };
+
+  assignRowBackgroundColor= (priorityLevel) => bgColors[priorityLevel];
 
   render() {
-    const assignRowBackgroundColor = (priorityLevel) => bgColors[priorityLevel];
-
     return (
-        <Table.Row style={{ backgroundColor: assignRowBackgroundColor(this.props.ticket.priority) }}>
+        <Table.Row style={{ backgroundColor: this.assignRowBackgroundColor(this.props.ticket.priority) }}>
+          <Table.Cell>{this.props.ticket.priority}</Table.Cell>
+          <Table.Cell>{this.props.ticket.status}</Table.Cell>
           <Table.Cell>{this.props.ticket.building}</Table.Cell>
           <Table.Cell>{this.props.ticket.floor}</Table.Cell>
           <Table.Cell>{this.props.ticket.room}</Table.Cell>
-          <Table.Cell>{this.props.ticket.priority}</Table.Cell>
           <Table.Cell>{this.props.ticket.description}</Table.Cell>
-          <Table.Cell>{this.props.ticket.status}</Table.Cell>
           <Table.Cell>{this.props.ticket.votes}</Table.Cell>
           <Table.Cell>{this.props.ticket.createdOn.toLocaleDateString('en-US')}</Table.Cell>
-          <Table.Cell>{this.props.ticket.updatedOn.toLocaleDateString('en-US')}</Table.Cell>
+          <Table.Cell>{this.updatedOnStatus()}</Table.Cell>
           <Table.Cell>
             <Menu>
               <Menu.Item>
