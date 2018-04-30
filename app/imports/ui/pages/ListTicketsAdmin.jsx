@@ -1,6 +1,7 @@
 import React from 'react';
 import { Meteor } from 'meteor/meteor';
-import { Button, Container, Dropdown, Form, Header, Icon, List, Loader, Menu, Table } from 'semantic-ui-react';
+import { Accordion, Button, Container, Dropdown,
+  Form, Header, Icon, List, Loader, Menu, Table } from 'semantic-ui-react';
 import { Tickets } from '/imports/api/ticket/ticket';
 import { withTracker } from 'meteor/react-meteor-data';
 import PropTypes from 'prop-types';
@@ -28,6 +29,12 @@ const sortOrder = [
   { key: 'descending', value: 'desc', text: 'Descending' },
 ];
 
+const timeSearchType = [
+  { key: 0, value: 'after', text: 'Before Date' },
+  { key: 1, value: 'before', text: 'After Date' },
+  { key: 2, value: 'range', text: 'Between Dates' },
+];
+
 /** Renders a table containing all of the Tickets documents. Use <TicketAdmin> to render each row. */
 class ListTickets extends React.Component {
   constructor() {
@@ -44,6 +51,7 @@ class ListTickets extends React.Component {
     this.handleChangeDropDown = this.handleChangeDropDown.bind(this);
     this.handleChangeStart = this.handleChangeStart.bind(this);
     this.handleChangeEnd = this.handleChangeEnd.bind(this);
+    this.handleClick = this.handleClick.bind(this);
     this.has = this.has.bind(this);
     this.filtering = this.filtering.bind(this);
     this.lastMonth = this.lastMonth.bind(this);
@@ -56,6 +64,7 @@ class ListTickets extends React.Component {
       search: '',
       search_field: 'building',
       search_date_field: 'createdOn',
+      search_date_type: '',
       date_start: moment(),
       date_end: moment(),
       search_time: false,
@@ -70,6 +79,8 @@ class ListTickets extends React.Component {
       temp_filter_inclusive: [],
       temp_sort_field: '',
       temp_sort_order: '',
+      activeIndex: -1,
+
     };
   }
 
@@ -125,6 +136,14 @@ class ListTickets extends React.Component {
   handleChangeStart = (date) => this.setState({ date_start: date });
   handleChangeEnd = (date) => this.setState({ date_end: date });
 
+  handleClick = (e, titleProps) => {
+    const { index } = titleProps;
+    const { activeIndex } = this.state;
+    const newIndex = activeIndex === index ? -1 : index;
+
+    this.setState({ activeIndex: newIndex });
+  }
+
   has = (criteria) => function (value) { return _.includes(value, criteria); }
 
   filteringInclusive = (orgArr) => {
@@ -165,24 +184,40 @@ class ListTickets extends React.Component {
   // };
 
   lastMonth() {
-    this.setState({ date_end: moment().subtract(31, 'days') });
+    this.setState({ date_start: moment().subtract(31, 'days') });
     this.setState({ time_filter_active: true });
   }
 
   lastWeek() {
-    this.setState({ date_end: moment().subtract(7, 'days') });
+    this.setState({ date_start: moment().subtract(7, 'days') });
     this.setState({ time_filter_active: true });
   }
 
   timeFilterOff = () => this.setState({ time_filter_active: false });
+  timeFilterOn = () => this.setState({ time_filter_active: true });
 
   timeFilter(coll) {
     const filterOn = this.state.time_filter_active;
+    const filterType = this.state.search_date_type;
+    const sDate = this.state.date_start;
+    const eDate = this.state.date_end;
 
-    if (filterOn) {
+    if (filterOn && (sDate !== null) && (filterType !== null)) {
       const field_to_query = this.state.search_date_field;
-      const end_date = this.state.date_end;
-      return coll.filter((t) => moment(t[field_to_query]).isAfter(end_date));
+
+      switch (filterType) {
+        case 'after':
+          return coll.filter((t) => moment(t[field_to_query]).isBefore(moment(sDate).startOf('day')), 'day');
+        case 'before':
+          return coll.filter((t) =>
+              moment(t[field_to_query]).isAfter(moment(sDate).endOf('day')), 'day');
+        case 'range':
+          return coll.filter((t) =>
+              moment(t[field_to_query]).isBetween(moment(sDate).startOf('day'), moment(eDate).endOf('day')), 'day');
+        default:
+          return coll.filter((t) =>
+              moment(t[field_to_query]).isSameOrAfter(sDate.endOf('day')), 'day');
+      }
     }
     return coll;
   }
@@ -195,10 +230,10 @@ class ListTickets extends React.Component {
 
   /** Render the page once subscriptions have been received. */
   renderPage() {
+    const activeIndex = this.state.activeIndex;
     const f_list = this.state.filters;
     const f_list_inclusive = this.state.filters_inclusive;
     const s_list = _.zip(this.state.sort_fields, this.state.sort_orders);
-
     const collFilteredInclusive = this.filteringInclusive(f_list_inclusive);
     const collFiltered = this.filtering(f_list, collFilteredInclusive);
     const collSearched = collFiltered.filter((t) => t[this.state.search_field].indexOf(this.state.search) !== -1);
@@ -228,38 +263,9 @@ class ListTickets extends React.Component {
                   onChange = {this.getSearchInput}
               />
             </Menu.Item>
-            <Menu.Item>
-              <Dropdown
-                  button
-                  name = 'search_date_field'
-                  type = 'text'
-                  placeholder = 'Date Field To Query'
-                  options = {_.filter(dbAllFields, (i) => i.key > 7)}
-                  value = {this.state.search_date_field}
-                  onChange = {this.handleChangeDropDown}
-              />
-              <DatePicker
-                  showYearDropdown
-                  isClearable={true}
-                  selected = {this.state.date_start}
-                  selectsStart
-                  startDate={this.state.date_start}
-                  endDate={this.state.date_end}
-                  onChange = {this.handleChangeStart}
-              />
-              <DatePicker
-                  showYearDropdown
-                  isClearable={true}
-                  selected = {this.state.date_end}
-                  selectsEnd
-                  startDate={this.state.date_start}
-                  endDate={this.state.date_end}
-                  onChange = {this.handleChangeEnd}
-              />
-            </Menu.Item>
             <Menu.Item
-              name='days31last'
-              onClick={this.lastMonth}
+                name='days31last'
+                onClick={this.lastMonth}
             >
               Last Month
             </Menu.Item>
@@ -269,13 +275,68 @@ class ListTickets extends React.Component {
             >
               Last Week
             </Menu.Item>
-            <Menu.Item
-                name='timeFilterOff'
-                onClick={this.timeFilterOff}
-            >
-              Time Filter Off
-            </Menu.Item>
           </Menu>
+          <Accordion styled>
+            <Accordion.Title active={this.state.activeIndex === 0} index={0} onClick={this.handleClick}>
+              <Icon name='dropdown' />
+              Time Filter
+            </Accordion.Title>
+            <Accordion.Content active={activeIndex === 0}>
+              <Menu>
+                <Menu.Item>
+                  <Dropdown
+                      button
+                      name = 'search_date_type'
+                      type = 'text'
+                      placeholder = 'Date Field To Query'
+                      options = {_.filter(timeSearchType)}
+                      value = {this.state.search_date_type}
+                      onChange = {this.handleChangeDropDown}
+                  />
+                  <Dropdown
+                      button
+                      name = 'search_date_field'
+                      type = 'text'
+                      placeholder = 'Date Field To Query'
+                      options = {_.filter(dbAllFields, (i) => i.key > 7)}
+                      value = {this.state.search_date_field}
+                      onChange = {this.handleChangeDropDown}
+                  />
+                  <DatePicker
+                      showYearDropdown
+                      isClearable={true}
+                      selected = {this.state.date_start}
+                      selectsStart
+                      startDate={this.state.date_start}
+                      endDate={this.state.date_end}
+                      onChange = {this.handleChangeStart}
+                  />
+                  <DatePicker
+                      showYearDropdown
+                      isClearable={true}
+                      selected = {this.state.date_end}
+                      selectsEnd
+                      startDate={this.state.date_start}
+                      endDate={this.state.date_end}
+                      onChange = {this.handleChangeEnd}
+                  />
+                </Menu.Item>
+                <Menu.Item
+                    name='applyTimeFilter'
+                    onClick={this.timeFilterOn}
+                >
+                  Apply Filter
+                </Menu.Item>
+                <Menu.Item
+                    name='timeFilterOff'
+                    onClick={this.timeFilterOff}
+                >
+                  Time Filter Off
+                </Menu.Item>
+              </Menu>
+            </Accordion.Content>
+
+          </Accordion>
           <Header textAlign='center' as='h3' inverted>Inclusive Filters</Header>
           <Menu>
             <Form.Input
