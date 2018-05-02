@@ -24,7 +24,7 @@ class ViewTicket extends React.Component {
     return (
         <Grid container centered>
           <Grid.Column>
-            <Header as="h2" textAlign="center">Ticket ####</Header>
+            <Header as="h2" textAlign="center" inverted>Ticket</Header>
             <Table celled fixed>
               <Table.Header>
                 <Table.Row>
