@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, List, Loader, Segment } from 'semantic-ui-react';
+import { Header, List, Loader, Segment, Grid } from 'semantic-ui-react';
 import { Tickets, TicketSchema } from '/imports/api/ticket/ticket';
 import { Bert } from 'meteor/themeteorchef:bert';
 import { Meteor } from 'meteor/meteor';
@@ -19,12 +19,13 @@ class AboutUs extends React.Component {
   /** Render the form. Use Uniforms: https://github.com/vazco/uniforms */
   renderPage() {
     return (
-        <Segment.Group raised>
+        <Grid container>
+        <Segment.Group>
           <Segment><Header as='h1'>Manoa311</Header></Segment>
           <Segment><Header as='h2'>Table of Contents</Header></Segment>
           <Segment><List bulleted>
             <List.Item as='a'>About Manoa311</List.Item>
-            <List.Item as='a'>Installation</List.Item>
+            <List.Item as='a' textalign='center'>Installation</List.Item>
             <List.Item>
               <a>Application Design</a>
               <List.List>
@@ -79,6 +80,7 @@ class AboutUs extends React.Component {
               <List.Item>Jason Maligon (jmaligon@hawaii.edu)</List.Item>
             </List></Segment>
         </Segment.Group>
+        </Grid>
     );
   }
 }
@@ -88,8 +90,6 @@ AboutUs.propTypes = {
   doc: PropTypes.object,
   model: PropTypes.object,
   ready: PropTypes.bool.isRequired,
-  ticket: PropTypes.object.isRequired,
-  notes: PropTypes.array.isRequired,
 };
 
 /** withTracker connects Meteor data to React components. https://guide.meteor.com/react.html#using-withTracker */
