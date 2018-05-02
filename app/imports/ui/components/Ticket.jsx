@@ -2,6 +2,7 @@ import React from 'react';
 import { Table, Button, Label, Icon } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
+import { Tickets, TicketSchema } from '/imports/api/ticket/ticket';
 
 const bgColors = {
   "Urgent": "#E9573F",
@@ -28,6 +29,7 @@ class Ticket extends React.Component {
           voted: true,
         }
       })
+      Tickets.update(this.props.ticket._id, { $set: {votes: this.props.ticket.votes + 1} });
     }
   };
 
@@ -39,6 +41,7 @@ class Ticket extends React.Component {
           voted: true,
         }
       })
+      Tickets.update(this.props.ticket._id, { $set: {votes: this.props.ticket.votes - 1} });
     }
   };
 

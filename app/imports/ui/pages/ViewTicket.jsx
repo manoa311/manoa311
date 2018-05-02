@@ -30,6 +30,7 @@ class ViewTicket extends React.Component {
           voted: true,
         }
       })
+      Tickets.update(this.props.ticket._id, { $set: {votes: this.props.ticket.votes + 1} });
     }
   };
 
@@ -41,6 +42,7 @@ class ViewTicket extends React.Component {
           voted: true,
         }
       })
+      Tickets.update(this.props.ticket._id, { $set: {votes: this.props.ticket.votes - 1} });
     }
   };
 
