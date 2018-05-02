@@ -60,7 +60,7 @@ class ViewTicket extends React.Component {
 
         <Grid container centered>
           <Grid.Column>
-            <Header as="h2" textAlign="center">Ticket ####</Header>
+            <Header as="h2" textAlign="center" inverted>Ticket</Header>
             <Table celled fixed>
               <Table.Header>
                 <Table.Row>
@@ -160,7 +160,6 @@ ViewTicket.propTypes = {
   doc: PropTypes.object,
   model: PropTypes.object,
   ready: PropTypes.bool.isRequired,
-  ticket: PropTypes.object.isRequired,
   notes: PropTypes.array.isRequired,
 };
 

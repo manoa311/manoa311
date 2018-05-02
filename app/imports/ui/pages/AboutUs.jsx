@@ -100,8 +100,6 @@ export default withTracker(({ match }) => {
   const subscription = Meteor.subscribe('TicketsAll');
   const subscription2 = Meteor.subscribe('NotesAll');
   return {
-    doc: Tickets.findOne(documentId),
-    ticket: Tickets.findOne(documentId),
     ready: (subscription.ready() && subscription2.ready()),
     notes: Notes.find({ contactId: documentId }).fetch(),
   };

@@ -15,7 +15,7 @@ class Footer extends React.Component {
         <footer>
           <div style={divStyle} className="ui center aligned container">
             <hr />
-            <container>
+            <Container>
               <Menu style={divStyle} borderless inverted widths={3}>
                 <Menu.Item name='landing' onClick={this.handleItemClick} as={NavLink} activeClassName="" exact to="/"><Image src='/images/manoa311logo.png' size='medium'/></Menu.Item>
                 <Menu.Item onClick={this.handleItemClick} as={NavLink} activeClassName="" exact to="/about">About us</Menu.Item>
@@ -28,7 +28,7 @@ class Footer extends React.Component {
                   <Popup
                       trigger= {<Button circular color='instagram' icon='instagram'href="https://instagram/share"/>} content='Share on Instagram' style={style} /></Menu.Item>
               </Menu>
-            </container>
+            </Container>
             <hr />
           </div>
         </footer>

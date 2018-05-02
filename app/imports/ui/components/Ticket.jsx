@@ -57,8 +57,8 @@ class Ticket extends React.Component {
     return (
         <Table.Row style={tableStyle}>
           <Table.Cell collapsing selectable><Button.Group basic><Button onClick={this.handleUp} icon><Icon name = 'angle up' /> </Button>
-            <Button negative={open} onClick={this.handleDown} icon><Icon name = 'angle down' /></Button> </Button.Group><Label circular>{logCount}</Label> </Table.Cell>
-          <Link to={`/view/${this.props.ticket._id}`}><Table.Cell>{this.props.ticket.building}</Table.Cell></Link>
+            <Button onClick={this.handleDown} icon><Icon name = 'angle down' /></Button> </Button.Group><Label circular>{logCount}</Label> </Table.Cell>
+          <Table.Cell><Link to={`/view/${this.props.ticket._id}`}>{this.props.ticket.building}</Link></Table.Cell>
           <Table.Cell>{this.props.ticket.floor}</Table.Cell>
           <Table.Cell>{this.props.ticket.room}</Table.Cell>
           <Table.Cell>{this.props.ticket.priority}</Table.Cell>
