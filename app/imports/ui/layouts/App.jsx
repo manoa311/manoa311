@@ -21,19 +21,19 @@ import MyTickets from '../pages/MyTickets';
 
 /** Top-level layout component for this application. Called in imports/startup/client/startup.jsx. */
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.getAdminStatus = this.getAdminStatus.bind(this);
-    this.state = { isAdminIn: false };
-  }
-
-  getAdminStatus() {
-    const isLogged = Meteor.userId() !== null;
-    const isAdmin = Roles.userIsInRole(Meteor.userId(), 'admin');
-    const statusUpdate = (isLogged && isAdmin);
-    this.setState({ isAdmin: statusUpdate });
-    console.log(this.state.isAdminIn);
-  }
+  // constructor(props) {
+  //   super(props);
+  //   this.getAdminStatus = this.getAdminStatus.bind(this);
+  //   this.state = { isAdminIn: false };
+  // }
+  //
+  // getAdminStatus() {
+  //   const isLogged = Meteor.userId() !== null;
+  //   const isAdmin = Roles.userIsInRole(Meteor.userId(), 'admin');
+  //   const statusUpdate = (isLogged && isAdmin);
+  //   this.setState({ isAdmin: statusUpdate });
+  //   console.log(this.state.isAdminIn);
+  // }
 
   render() {
     return (

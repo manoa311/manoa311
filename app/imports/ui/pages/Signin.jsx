@@ -33,13 +33,32 @@ export default class Signin extends React.Component {
         this.setState({ error: err.reason });
       } else {
         this.setState({ error: '', redirectToReferer: true });
+        // console.log(`email: ${email}`);
+        // if (email === 'admin@foo.com') {
+        //   this.setState({ isAdmin: false });
+        // } else {
+        //   this.setState({ isAdmin: true });
+        // }
+        // console.log(`ia: ${this.state.isAdmin}`);
       }
     });
   }
 
   /** Render the signin form. */
   render() {
-    const { from } = this.props.location.state || { from: { pathname: '/' } };
+    // const isAdministrator = this.state.isAdmin;
+    const defaultLanding = { pathname: '/' };
+    const defaultAdmin = { pathname: '/admin-ticket' };
+    const userEmail = this.state.email;
+    function goToAfterSignIn(e) {
+      if (e === 'admin@foo.com') {
+        return defaultAdmin;
+      }
+      return defaultLanding;
+    }
+
+    // const { from } = this.props.location.state || { from: { pathname: '/' } };
+    const { from } = this.props.location.state || { from: goToAfterSignIn(userEmail) };
     // if correct authentication, redirect to page instead of login screen
     if (this.state.redirectToReferer) {
       return <Redirect to={from}/>;
