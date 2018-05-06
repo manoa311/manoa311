@@ -1,7 +1,7 @@
 import React from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Accordion, Button, Container, Dropdown,
-  Form, Header, Icon, List, Loader, Menu, Table } from 'semantic-ui-react';
+  Form, Header, Icon, List, Loader, Menu, Pagination, Table } from 'semantic-ui-react';
 import { Tickets } from '/imports/api/ticket/ticket';
 import { withTracker } from 'meteor/react-meteor-data';
 import PropTypes from 'prop-types';
@@ -63,6 +63,7 @@ class ListTickets extends React.Component {
     this.removeFilterExclusive = this.removeFilterExclusive.bind(this);
     this.removeFilterInclusive = this.removeFilterInclusive.bind(this);
     this.timeFilterSwitch = this.timeFilterSwitch.bind(this);
+    this.handleClickPage = this.handleClickPage.bind(this);
 
     this.state = {
       activeIndexTime: -1,
@@ -77,7 +78,7 @@ class ListTickets extends React.Component {
       filter_priority: [this.has('Regular')],
       filters: [],
       filters_inclusive: [],
-            search: '',
+      search: '',
       search_field: 'building',
       search_date_field: 'createdOn',
       search_date_type: '',
@@ -92,10 +93,11 @@ class ListTickets extends React.Component {
       temp_filter_inclusive: [],
       temp_sort_field: '',
       temp_sort_order: '',
-      visible: false,
+      activePage: 1,
+      tickets_page: 1,
+      tickets_per_page: 5,
     };
   }
-
 
   addFilter() {
     const currArr = this.state.filters;
@@ -193,6 +195,13 @@ class ListTickets extends React.Component {
         this.setState({ date_picker_start: false, date_picker_end: true });
     }
   }
+  getSortField = (field) => _.head(field);
+  getSortOrder(field) {
+    if (_.last(field) === 'desc') {
+      return 'sort content descending';
+    }
+    return 'sort content ascending';
+  }
 
   handleChangeStart = (date) => this.setState({ date_start: date });
   handleChangeEnd = (date) => this.setState({ date_end: date });
@@ -279,13 +288,14 @@ class ListTickets extends React.Component {
     return coll;
   }
 
-  getSortField = (field) => _.head(field);
-  getSortOrder(field) {
-    if (_.last(field) === 'desc') {
-      return 'sort content descending';
-    }
-    return 'sort content ascending';
+
+  handleClickPage(event) {
+    this.setState({ tickets_page: Number(event.target.id) });
   }
+
+  handleInputChange = (e, { value }) => this.setState({ tickets_page: value })
+  handlePaginationChange = (e, { activePage }) => this.setState({ tickets_page: activePage })
+
 
   /** If the subscription(s) have been received, render the page, otherwise show a loading icon. */
   render() {
@@ -303,7 +313,23 @@ class ListTickets extends React.Component {
     const collSearched = collFiltered.filter((t) => t[this.state.search_field].indexOf(this.state.search) !== -1);
     const collTimeSearchTickets = this.timeFilter(collSearched);
     const collSorted = this.applySorts(collTimeSearchTickets);
-
+    const currentPage = this.state.tickets_page;
+    const ticketsPerPage = this.state.tickets_per_page;
+    const indexOfLastTicket = currentPage * ticketsPerPage;
+    const indexOfFirstTicket = indexOfLastTicket - ticketsPerPage;
+    const finalSetOfTickets = collSorted.slice(indexOfFirstTicket, indexOfLastTicket);
+    const activePage = this.state.activePage;
+    const maxPage = Math.ceil(collSorted.length / ticketsPerPage) + 1;
+    const pageNumbers = _.range(1, maxPage, 1);
+    const renderPageNumbers = pageNumbers.map(number => (
+          <li
+              key={number}
+              id={number}
+              onClick={this.handleClickPage}
+          >
+            {number}
+          </li>
+      ));
 
     return (
         <Container>
@@ -547,9 +573,19 @@ class ListTickets extends React.Component {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {collSorted.map((ticket, index) => <TicketAdmin key={index} ticket={ticket} />)}
+              {finalSetOfTickets.map((ticket, index) => <TicketAdmin key={index} ticket={ticket} />)}
             </Table.Body>
           </Table>
+          <Table.Footer fullWidth>
+            <Table.Row>
+              <Pagination activePage={activePage} onPageChange={this.handlePaginationChange} totalPages={maxPage - 1} />
+            </Table.Row>
+          </Table.Footer>
+          <div>
+            <ul id="page-numbers">
+              {renderPageNumbers}
+            </ul>
+          </div>
         </Container>
     );
   }
