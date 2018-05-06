@@ -1,7 +1,7 @@
 import React from 'react';
-import { Button, Dropdown, Menu, Table } from 'semantic-ui-react';
+import { Button, Dropdown, Table } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+import { Link, Redirect, withRouter } from 'react-router-dom';
 import { Bert } from 'meteor/themeteorchef:bert';
 import { Tickets } from '/imports/api/ticket/ticket';
 import moment from 'moment';
@@ -24,13 +24,14 @@ class TicketAdmin extends React.Component {
   constructor(props) {
     super(props);
     this.handleChangeDropDown = this.handleChangeDropDown.bind(this);
-    this.onClick = this.onClick.bind(this);
+    this.onDelete = this.onDelete.bind(this);
 
-    // this.state = {
-    //   update_status: '',
-    // };
+    this.state = {
+      status: false,
+    };
   }
 
+  assignRowBackgroundColor= (priorityLevel) => bgColors[priorityLevel];
 
   /** Notify the user of the results of the submit. If successful, clear the form. */
   cancelCallback(error) {
@@ -57,15 +58,23 @@ class TicketAdmin extends React.Component {
     }
   }
 
-
   handleChangeDropDown = (e, { value }) => {
     const val = value;
     Tickets.update(this.props.ticket._id, { $set: { status: value } }, this.handleChangeDropDownCallback(val));
     Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
   }
 
+  handleClick = () => {
+    this.setState({ status: true });
+  }
+
+  // handleSubmit = (user) => {
+  //   this.setState({ status: true });
+  //   saveUser(user).then(() => this.props.history.push('/dashboard'););
+  // }
+
   /** On submit, insert the data. */
-  onClick() {
+  onDelete() {
     /* eslint-disable-next-line */
     if (confirm('Are Really Really Sure You Want To Delete This Ticket???')) {
       Tickets.remove(this.props.ticket._id, this.deleteCallback);
@@ -79,14 +88,22 @@ class TicketAdmin extends React.Component {
     return this.props.ticket.updatedOn.toLocaleDateString('en-US');
   };
 
-  assignRowBackgroundColor= (priorityLevel) => bgColors[priorityLevel];
 
   render() {
+    const gotoStatus = this.state.status;
+
+    if (gotoStatus) {
+      return <Redirect to={`/view/${this.props.ticket._id}`} />;
+    }
+
     return (
-        <Table.Row style={{ backgroundColor: this.assignRowBackgroundColor(this.props.ticket.priority) }}>
+        <Table.Row
+            style={{ backgroundColor: this.assignRowBackgroundColor(this.props.ticket.priority) }}
+            onClick={this.handleClick}
+        >
           <Table.Cell>{this.props.ticket.priority}</Table.Cell>
           <Table.Cell>{this.props.ticket.status}</Table.Cell>
-          <Table.Cell>{this.props.ticket.building}</Table.Cell>
+          <Table.Cell><Link to={`/view/${this.props.ticket._id}`}>{this.props.ticket.building}</Link></Table.Cell>
           <Table.Cell>{this.props.ticket.floor}</Table.Cell>
           <Table.Cell>{this.props.ticket.room}</Table.Cell>
           <Table.Cell>{this.props.ticket.description}</Table.Cell>
@@ -104,7 +121,7 @@ class TicketAdmin extends React.Component {
             />
           </Table.Cell>
           <Table.Cell>
-            <Button onClick={this.onClick}>
+            <Button onClick={this.onDelete}>
               Delete
             </Button>
           </Table.Cell>

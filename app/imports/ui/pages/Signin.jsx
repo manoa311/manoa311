@@ -33,13 +33,6 @@ export default class Signin extends React.Component {
         this.setState({ error: err.reason });
       } else {
         this.setState({ error: '', redirectToReferer: true });
-        // console.log(`email: ${email}`);
-        // if (email === 'admin@foo.com') {
-        //   this.setState({ isAdmin: false });
-        // } else {
-        //   this.setState({ isAdmin: true });
-        // }
-        // console.log(`ia: ${this.state.isAdmin}`);
       }
     });
   }
@@ -57,12 +50,11 @@ export default class Signin extends React.Component {
         if (email === 'admin@foo.com') {
           return defaultAdmin;
         }
-        return defaultMyTicket;
+        return defaultLanding;
       }
         return defaultLanding;
     }
 
-    // const { from } = this.props.location.state || { from: { pathname: '/' } };
     const { from } = this.props.location.state || { from: goToAfterSignIn(userEmail, redirectStatus) };
     // if correct authentication, redirect to page instead of login screen
     if (this.state.redirectToReferer) {
