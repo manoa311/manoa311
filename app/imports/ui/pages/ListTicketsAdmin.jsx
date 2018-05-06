@@ -43,6 +43,7 @@ class ListTickets extends React.Component {
     this.addFilter = this.addFilter.bind(this);
     this.addFilterInclusive = this.addFilterInclusive.bind(this);
     this.addSort = this.addSort.bind(this);
+    this.allEmergencyOnly = this.allEmergencyOnly.bind(this);
     this.allNewOnly = this.allNewOnly.bind(this);
     this.clearFilter = this.clearFilter.bind(this);
     this.clearFilterInclusive = this.clearFilterInclusive.bind(this);
@@ -72,12 +73,13 @@ class ListTickets extends React.Component {
       date_end: moment(),
       date_picker_start: true,
       date_picker_end: true,
+      filter_all_emergency: false,
       filter_all_new: false,
       filter_building: [this.has('Webster'), this.has('Sakamaki'), this.has('Critical')],
       filter_priority: [this.has('Regular')],
       filters: [],
       filters_inclusive: [],
-            search: '',
+      search: '',
       search_field: 'building',
       search_date_field: 'createdOn',
       search_date_type: '',
@@ -122,6 +124,21 @@ class ListTickets extends React.Component {
     this.setState({ sort_orders: newArrOrder });
     this.setState({ temp_filter_field: '' });
     this.setState({ temp_filter_order: '' });
+  }
+
+  allEmergencyOnly() {
+    const allEmergency = this.state.filter_all_emergency;
+    if (allEmergency) {
+      const orgArr = this.state.filters;
+      const newArr = _.remove(orgArr, function (n) { return !(n === 'Emergency'); });
+      this.setState({ filters: newArr, filter_all_emergency: false });
+      this.setState({ temp_filter_array: _.map(newArr, this.has) });
+    } else {
+      const currArr = this.state.filters;
+      const newArr = currArr.concat('Emergency');
+      this.setState({ filters: newArr, filter_all_emergency: true });
+      this.setState({ temp_filter_array: _.map(newArr, this.has) });
+    }
   }
 
   allNewOnly() {
@@ -232,7 +249,7 @@ class ListTickets extends React.Component {
   }
 
   removeFilterExclusive(e, titleProps) {
-    const content = titleProps.myContent;
+    const content = titleProps.mycontent;
     const orgArr = this.state.filters;
     const newArr = _.remove(orgArr, function (n) { return !(content === n); });
     this.setState({ filters: newArr });
@@ -240,7 +257,7 @@ class ListTickets extends React.Component {
   }
 
   removeFilterInclusive(e, titleProps) {
-    const content = titleProps.myContent;
+    const content = titleProps.mycontent;
     const orgArr = this.state.filters_inclusive;
     const newArr = _.remove(orgArr, function (n) { return !(content === n); });
     this.setState({ filters_inclusive: newArr });
@@ -280,6 +297,7 @@ class ListTickets extends React.Component {
   }
 
   getSortField = (field) => _.head(field);
+
   getSortOrder(field) {
     if (_.last(field) === 'desc') {
       return 'sort content descending';
@@ -333,6 +351,13 @@ class ListTickets extends React.Component {
                 onClick={this.allNewOnly}
             >
               All New Only
+            </Menu.Item>
+            <Menu.Item
+                name='allEmergencyOnly'
+                active={this.state.filter_all_emergency}
+                onClick={this.allEmergencyOnly}
+            >
+              All Emergency Only
             </Menu.Item>
             <Menu.Item
                 name='days31last'
@@ -437,7 +462,7 @@ class ListTickets extends React.Component {
               </Menu>
               <List>
                 {f_list_inclusive.map((filter, index) =>
-                    <Button key={index} myContent={filter} onClick={this.removeFilterInclusive}>
+                    <Button key={index} mycontent={filter} onClick={this.removeFilterInclusive}>
                       {filter}
                       <Icon name = 'delete' />
                     </Button>)}
@@ -466,7 +491,7 @@ class ListTickets extends React.Component {
               <List>
                 {f_list.map((filter, index) =>
                     <Button name = 'activeIndexExclusive'
-                            key={index} myContent={filter} onClick={this.removeFilterExclusive}>
+                            key={index} mycontent={filter} onClick={this.removeFilterExclusive}>
                       {filter}
                       <Icon name = 'delete' />
                     </Button>)}
