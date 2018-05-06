@@ -56,6 +56,7 @@ class ListTickets extends React.Component {
     this.handleChangeStart = this.handleChangeStart.bind(this);
     this.handleChangeEnd = this.handleChangeEnd.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.handlePaginationChange = this.handlePaginationChange.bind(this);
     this.has = this.has.bind(this);
     this.filtering = this.filtering.bind(this);
     this.lastMonth = this.lastMonth.bind(this);
@@ -63,7 +64,6 @@ class ListTickets extends React.Component {
     this.removeFilterExclusive = this.removeFilterExclusive.bind(this);
     this.removeFilterInclusive = this.removeFilterInclusive.bind(this);
     this.timeFilterSwitch = this.timeFilterSwitch.bind(this);
-    this.handleClickPage = this.handleClickPage.bind(this);
 
     this.state = {
       activeIndexTime: -1,
@@ -93,7 +93,6 @@ class ListTickets extends React.Component {
       temp_filter_inclusive: [],
       temp_sort_field: '',
       temp_sort_order: '',
-      activePage: 1,
       tickets_page: 1,
       tickets_per_page: 5,
     };
@@ -183,6 +182,13 @@ class ListTickets extends React.Component {
   getFilterInputInclusive = (event) => this.setState({ temp_filter_inclusive: event.target.value.substr(0, 20) });
 
   getSearchInput = (event) => this.setState({ search: event.target.value.substr(0, 20) });
+  getSortField = (field) => _.head(field);
+  getSortOrder(field) {
+    if (_.last(field) === 'desc') {
+      return 'sort content descending';
+    }
+    return 'sort content ascending';
+  }
 
   handleChangeDropDown = (e, { name, value }) => this.setState({ [name]: value });
   handleChangeDropDownTimeFilter = (e, { name, value }) => {
@@ -194,13 +200,6 @@ class ListTickets extends React.Component {
       default:
         this.setState({ date_picker_start: false, date_picker_end: true });
     }
-  }
-  getSortField = (field) => _.head(field);
-  getSortOrder(field) {
-    if (_.last(field) === 'desc') {
-      return 'sort content descending';
-    }
-    return 'sort content ascending';
   }
 
   handleChangeStart = (date) => this.setState({ date_start: date });
@@ -214,6 +213,7 @@ class ListTickets extends React.Component {
     this.setState({ activeIndex: newIndex });
   }
 
+  handlePaginationChange = (e, { activePage }) => this.setState({ tickets_page: activePage })
   has = (criteria) => function (value) { return _.includes(value, criteria); }
 
   lastMonth() {
@@ -288,15 +288,6 @@ class ListTickets extends React.Component {
     return coll;
   }
 
-
-  handleClickPage(event) {
-    this.setState({ tickets_page: Number(event.target.id) });
-  }
-
-  handleInputChange = (e, { value }) => this.setState({ tickets_page: value })
-  handlePaginationChange = (e, { activePage }) => this.setState({ tickets_page: activePage })
-
-
   /** If the subscription(s) have been received, render the page, otherwise show a loading icon. */
   render() {
     return (this.props.ready) ? this.renderPage() : <Loader>Getting data</Loader>;
@@ -318,18 +309,7 @@ class ListTickets extends React.Component {
     const indexOfLastTicket = currentPage * ticketsPerPage;
     const indexOfFirstTicket = indexOfLastTicket - ticketsPerPage;
     const finalSetOfTickets = collSorted.slice(indexOfFirstTicket, indexOfLastTicket);
-    const activePage = this.state.activePage;
-    const maxPage = Math.ceil(collSorted.length / ticketsPerPage) + 1;
-    const pageNumbers = _.range(1, maxPage, 1);
-    const renderPageNumbers = pageNumbers.map(number => (
-          <li
-              key={number}
-              id={number}
-              onClick={this.handleClickPage}
-          >
-            {number}
-          </li>
-      ));
+    const maxPage = Math.ceil(collSorted.length / ticketsPerPage);
 
     return (
         <Container>
@@ -576,16 +556,7 @@ class ListTickets extends React.Component {
               {finalSetOfTickets.map((ticket, index) => <TicketAdmin key={index} ticket={ticket} />)}
             </Table.Body>
           </Table>
-          <Table.Footer fullWidth>
-            <Table.Row>
-              <Pagination activePage={activePage} onPageChange={this.handlePaginationChange} totalPages={maxPage - 1} />
-            </Table.Row>
-          </Table.Footer>
-          <div>
-            <ul id="page-numbers">
-              {renderPageNumbers}
-            </ul>
-          </div>
+          <Pagination activePage={currentPage} onPageChange={this.handlePaginationChange} totalPages={maxPage} />
         </Container>
     );
   }

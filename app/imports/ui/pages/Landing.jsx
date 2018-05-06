@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React from 'react';
 import { Meteor } from 'meteor/meteor';
-import { Accordion, Table, Dropdown, Menu, Form, Button, Icon, List, Loader } from 'semantic-ui-react';
+import { Accordion, Table, Dropdown, Menu, Form, Button, Icon, List, Loader, Pagination } from 'semantic-ui-react';
 import { Tickets } from '/imports/api/ticket/ticket';
 import { withTracker } from 'meteor/react-meteor-data';
 /** import { Link } from 'react-router-dom'; */
@@ -57,6 +57,7 @@ class Landing extends React.Component {
     this.handleChangeStart = this.handleChangeStart.bind(this);
     this.handleChangeEnd = this.handleChangeEnd.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.handlePaginationChange = this.handlePaginationChange.bind(this);
     this.has = this.has.bind(this);
     this.filtering = this.filtering.bind(this);
     this.lastMonth = this.lastMonth.bind(this);
@@ -93,7 +94,8 @@ class Landing extends React.Component {
       temp_filter_inclusive: [],
       temp_sort_field: '',
       temp_sort_order: '',
-      visible: false,
+      tickets_page: 1,
+      tickets_per_page: 10,
     };
   }
 
@@ -206,6 +208,8 @@ class Landing extends React.Component {
     this.setState({ activeIndex: newIndex });
   }
 
+  handlePaginationChange = (e, { activePage }) => this.setState({ tickets_page: activePage })
+
   has = (criteria) => function (value) { return _.includes(value, criteria); }
 
   lastMonth() {
@@ -302,6 +306,12 @@ class Landing extends React.Component {
     const collSearched = collFiltered.filter((t) => t[this.state.search_field].indexOf(this.state.search) !== -1);
     const collTimeSearchTickets = this.timeFilter(collSearched);
     const collSorted = this.applySorts(collTimeSearchTickets);
+    const currentPage = this.state.tickets_page;
+    const ticketsPerPage = this.state.tickets_per_page;
+    const indexOfLastTicket = currentPage * ticketsPerPage;
+    const indexOfFirstTicket = indexOfLastTicket - ticketsPerPage;
+    const finalSetOfTickets = collSorted.slice(indexOfFirstTicket, indexOfLastTicket);
+    const maxPage = Math.ceil(collSorted.length / ticketsPerPage);
     const menuStyle = { fontFamily: 'Trebuchet MS' };
 
     return (
@@ -544,9 +554,10 @@ class Landing extends React.Component {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {collSorted.map((ticket, index) => <Ticket key={index} ticket={ticket} />)}
+              {finalSetOfTickets.map((ticket, index) => <Ticket key={index} ticket={ticket} />)}
             </Table.Body>
           </Table>
+          <Pagination activePage={currentPage} onPageChange={this.handlePaginationChange} totalPages={maxPage} />
         </div>
     );
   }
