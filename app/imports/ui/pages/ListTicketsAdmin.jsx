@@ -232,7 +232,7 @@ class ListTickets extends React.Component {
   }
 
   removeFilterExclusive(e, titleProps) {
-    const content = titleProps.myContent;
+    const content = titleProps.mycontent;
     const orgArr = this.state.filters;
     const newArr = _.remove(orgArr, function (n) { return !(content === n); });
     this.setState({ filters: newArr });
@@ -240,7 +240,7 @@ class ListTickets extends React.Component {
   }
 
   removeFilterInclusive(e, titleProps) {
-    const content = titleProps.myContent;
+    const content = titleProps.mycontent;
     const orgArr = this.state.filters_inclusive;
     const newArr = _.remove(orgArr, function (n) { return !(content === n); });
     this.setState({ filters_inclusive: newArr });
@@ -437,7 +437,7 @@ class ListTickets extends React.Component {
               </Menu>
               <List>
                 {f_list_inclusive.map((filter, index) =>
-                    <Button key={index} myContent={filter} onClick={this.removeFilterInclusive}>
+                    <Button key={index} mycontent={filter} onClick={this.removeFilterInclusive}>
                       {filter}
                       <Icon name = 'delete' />
                     </Button>)}
@@ -466,7 +466,7 @@ class ListTickets extends React.Component {
               <List>
                 {f_list.map((filter, index) =>
                     <Button name = 'activeIndexExclusive'
-                            key={index} myContent={filter} onClick={this.removeFilterExclusive}>
+                            key={index} mycontent={filter} onClick={this.removeFilterExclusive}>
                       {filter}
                       <Icon name = 'delete' />
                     </Button>)}
