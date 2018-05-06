@@ -2,6 +2,7 @@ import React from 'react';
 import { Table, Button, Label, Icon } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
+import { Tickets, TicketSchema } from '/imports/api/ticket/ticket';
 
 const bgColors = {
   "Urgent": "#E9573F",
@@ -14,7 +15,7 @@ class Ticket extends React.Component {
   constructor(props) {
     super(props)
     this.state ={
-      logCount: 0,
+      logCount: this.props.ticket.votes,
       voted: false,
     };
     this.handleUp = this.handleUp.bind(this);
@@ -28,6 +29,7 @@ class Ticket extends React.Component {
           voted: true,
         }
       })
+      Tickets.update(this.props.ticket._id, { $set: {votes: this.props.ticket.votes + 1} });
     }
   };
 
@@ -39,6 +41,7 @@ class Ticket extends React.Component {
           voted: true,
         }
       })
+      Tickets.update(this.props.ticket._id, { $set: {votes: this.props.ticket.votes - 1} });
     }
   };
 
@@ -54,8 +57,8 @@ class Ticket extends React.Component {
     return (
         <Table.Row style={tableStyle}>
           <Table.Cell collapsing selectable><Button.Group basic><Button onClick={this.handleUp} icon><Icon name = 'angle up' /> </Button>
-            <Button negative={open} onClick={this.handleDown} icon><Icon name = 'angle down' /></Button> </Button.Group><Label circular>{logCount}</Label> </Table.Cell>
-          <Link to={`/view/${this.props.ticket._id}`}><Table.Cell>{this.props.ticket.building}</Table.Cell></Link>
+            <Button onClick={this.handleDown} icon><Icon name = 'angle down' /></Button> </Button.Group><Label circular>{logCount}</Label> </Table.Cell>
+          <Table.Cell><Link to={`/view/${this.props.ticket._id}`}>{this.props.ticket.building}</Link></Table.Cell>
           <Table.Cell>{this.props.ticket.floor}</Table.Cell>
           <Table.Cell>{this.props.ticket.room}</Table.Cell>
           <Table.Cell>{this.props.ticket.priority}</Table.Cell>
