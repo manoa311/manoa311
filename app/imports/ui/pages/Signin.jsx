@@ -39,7 +39,7 @@ export default class Signin extends React.Component {
 
   /** Render the signin form. */
   render() {
-    // const isAdministrator = this.state.isAdmin;
+    const isAdministrator = this.state.isAdmin;
     const defaultLanding = { pathname: '/' };
     const defaultAdmin = { pathname: '/admin-ticket' };
     const defaultMyTicket = { pathname: '/my-tickets' };
@@ -60,7 +60,7 @@ export default class Signin extends React.Component {
     if (this.state.redirectToReferer) {
       return <Redirect to={from}/>;
     }
-    // Otherwise return the Login form.
+    Otherwise return the Login form.
     return (
         <Container>
           <Grid textAlign="center" verticalAlign="middle" centered columns={2}>

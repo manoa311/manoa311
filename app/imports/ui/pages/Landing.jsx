@@ -1,13 +1,11 @@
-import _ from 'lodash'
+import _ from 'lodash';
 import React from 'react';
 import { Meteor } from 'meteor/meteor';
-import { Table, Dropdown, Menu, Form, Button, Icon, Header, List, Loader } from 'semantic-ui-react';
+import { Table, Dropdown, Menu, Form, Button, Icon, Loader } from 'semantic-ui-react';
 import { Tickets } from '/imports/api/ticket/ticket';
 import { withTracker } from 'meteor/react-meteor-data';
 /** import { Link } from 'react-router-dom'; */
-import TicketAdmin from '/imports/ui/components/TicketAdmin';
 import Ticket from '/imports/ui/components/Ticket';
-import DatePicker from 'react-datepicker';
 import moment from 'moment/moment';
 import PropTypes from 'prop-types';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -16,14 +14,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 /** Table template from https://react.semantic-ui.com/collections/table#table-example-sortable */
 
 /** Selectable cells from https://react.semantic-ui.com/collections/table#table-example-selectable-cell */
-/**
-const sampleData = [
-  { status: 'Unresolved', ticketName: 'Broken door handle', building: 'POST', room: '1st floor Mens bathroom', issuedBy: 'John (john@hawaii.edu)', dateCreated: '2018-02-07 12:05', dateUpdated: 'No Update' },
-  { status: 'Resolved', ticketName: 'Broken window', building: 'Saunders Hall', room: 'Room 621E', issuedBy: 'Jack (jack@hawaii.edu)', dateCreated: '2018-03-15 16:05', dateUpdated: '2018-04-08 11:02' },
-  { status: 'Resolved', ticketName: 'Missing trashcan', building: 'Hamilton Library', room: '3rd floor Womens bathroom', issuedBy: 'Martha (martha@hawaii.edu)', dateCreated: '2017-08-09 8:05', dateUpdated: '2017-09-03 12:05' },
-  { status: 'Received', ticketName: 'Flickering lightbulb', building: 'Keller Hall', room: 'Room 303', issuedBy: 'Wendy (wendy@hawaii.edu)', dateCreated: '2018-01-22 12:38', dateUpdated: '2018-03-21' }
-]
-*/
+
+
 const dbDataFields = [
   { key: 'status', value: 'status', text: 'status' },
   { key: 'description', value: 'description', text: 'description' },
@@ -35,10 +27,10 @@ const dbDataFields = [
   { key: 'votes', value: 'votes', text: 'votes' },
 ];
 
-const dbDateFields = [
-  { key: 'createdOn', value: 'createdOn', text: 'createdOn' },
-  { key: 'updatedOn', value: 'updatedOn', text: 'updatedOn' },
-];
+// const dbDateFields = [
+//   { key: 'createdOn', value: 'createdOn', text: 'createdOn' },
+//   { key: 'updatedOn', value: 'updatedOn', text: 'updatedOn' },
+// ];
 
 /** TODO: add dynamic config for cell coloring, fix table sorting, add a hrefs to selectable cells */
 
@@ -87,7 +79,6 @@ class Landing extends React.Component {
     this.handleClickUpdated = this.handleClickUpdated.bind(this);
     this.has = this.has.bind(this);
     this.filtering = this.filtering.bind(this);
-    // this.componentDidMount = this.componentDidMount.bind(this);
 
 
     this.state = {
