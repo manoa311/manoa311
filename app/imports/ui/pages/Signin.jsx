@@ -33,13 +33,6 @@ export default class Signin extends React.Component {
         this.setState({ error: err.reason });
       } else {
         this.setState({ error: '', redirectToReferer: true });
-        // console.log(`email: ${email}`);
-        // if (email === 'admin@foo.com') {
-        //   this.setState({ isAdmin: false });
-        // } else {
-        //   this.setState({ isAdmin: true });
-        // }
-        // console.log(`ia: ${this.state.isAdmin}`);
       }
     });
   }

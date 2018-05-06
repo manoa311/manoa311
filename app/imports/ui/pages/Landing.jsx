@@ -1,11 +1,10 @@
-import _ from 'lodash'
+import _ from 'lodash';
 import React from 'react';
 import { Meteor } from 'meteor/meteor';
-import { Table, Dropdown, Menu, Form, Button, Icon, Header, List, Loader } from 'semantic-ui-react';
+import { Accordion, Table, Dropdown, Menu, Form, Button, Icon, List, Loader } from 'semantic-ui-react';
 import { Tickets } from '/imports/api/ticket/ticket';
 import { withTracker } from 'meteor/react-meteor-data';
 /** import { Link } from 'react-router-dom'; */
-import TicketAdmin from '/imports/ui/components/TicketAdmin';
 import Ticket from '/imports/ui/components/Ticket';
 import DatePicker from 'react-datepicker';
 import moment from 'moment/moment';
@@ -13,106 +12,91 @@ import PropTypes from 'prop-types';
 import 'react-datepicker/dist/react-datepicker.css';
 
 
-/** Table template from https://react.semantic-ui.com/collections/table#table-example-sortable */
-
-/** Selectable cells from https://react.semantic-ui.com/collections/table#table-example-selectable-cell */
-/**
-const sampleData = [
-  { status: 'Unresolved', ticketName: 'Broken door handle', building: 'POST', room: '1st floor Mens bathroom', issuedBy: 'John (john@hawaii.edu)', dateCreated: '2018-02-07 12:05', dateUpdated: 'No Update' },
-  { status: 'Resolved', ticketName: 'Broken window', building: 'Saunders Hall', room: 'Room 621E', issuedBy: 'Jack (jack@hawaii.edu)', dateCreated: '2018-03-15 16:05', dateUpdated: '2018-04-08 11:02' },
-  { status: 'Resolved', ticketName: 'Missing trashcan', building: 'Hamilton Library', room: '3rd floor Womens bathroom', issuedBy: 'Martha (martha@hawaii.edu)', dateCreated: '2017-08-09 8:05', dateUpdated: '2017-09-03 12:05' },
-  { status: 'Received', ticketName: 'Flickering lightbulb', building: 'Keller Hall', room: 'Room 303', issuedBy: 'Wendy (wendy@hawaii.edu)', dateCreated: '2018-01-22 12:38', dateUpdated: '2018-03-21' }
-]
-*/
-const dbDataFields = [
-  { key: 'status', value: 'status', text: 'status' },
-  { key: 'description', value: 'description', text: 'description' },
-  { key: 'building', value: 'building', text: 'Building' },
-  { key: 'room', value: 'room', text: 'room' },
-  { key: 'floor', value: 'floor', text: 'floor' },
-  { key: 'owner', value: 'owner', text: 'owner' },
-  { key: 'priority', value: 'priority', text: 'priority' },
-  { key: 'votes', value: 'votes', text: 'votes' },
+const dbAllFields = [
+  { key: 0, value: 'building', text: 'Building' },
+  { key: 1, value: 'description', text: 'Description' },
+  { key: 2, value: 'floor', text: 'Floor' },
+  { key: 3, value: 'owner', text: 'Owner' },
+  { key: 4, value: 'priority', text: 'Priority' },
+  { key: 5, value: 'room', text: 'Room' },
+  { key: 6, value: 'status', text: 'Status' },
+  { key: 7, value: 'votes', text: 'Votes' },
+  { key: 8, value: 'createdOn', text: 'Created' },
+  { key: 9, value: 'updatedOn', text: 'Updated' },
 ];
 
-const dbDateFields = [
-  { key: 'createdOn', value: 'createdOn', text: 'createdOn' },
-  { key: 'updatedOn', value: 'updatedOn', text: 'updatedOn' },
+const sortOrder = [
+  { key: 'ascending', value: 'asc', text: 'Ascending' },
+  { key: 'descending', value: 'desc', text: 'Descending' },
 ];
 
-/** TODO: add dynamic config for cell coloring, fix table sorting, add a hrefs to selectable cells */
+const timeSearchType = [
+  { key: 0, value: 'after', text: 'Before Date' },
+  { key: 1, value: 'before', text: 'After Date' },
+  { key: 2, value: 'range', text: 'Between Dates' },
+];
 
-/** Cell populating config (place in <Table.Body>)
- *
-  getColorProps(status) {
-    if (status === "Unresolved") {
-      return {warning: true}
-    }
-    ...
-  }
- {_.map(data, ({ status, ticketName, building, room, issuedBy, dateCreated, dateUpdated }) => (
-     <Table.Row key={dateCreated}>
-       <Table.Cell {...getColorProps(status)}>{status}</Table.Cell>
-       <Table.Cell>{ticketName}</Table.Cell>
-       <Table.Cell>{building}</Table.Cell>
-       <Table.Cell>{room}</Table.Cell>
-       <Table.Cell>{issuedBy}</Table.Cell>
-       <Table.Cell>{dateCreated}</Table.Cell>
-       <Table.Cell>{dateUpdated}</Table.Cell>
-     </Table.Row>
- ))}
-
- * */
+/** Renders a table containing all of the Tickets documents. Use <TicketAdmin> to render each row. */
 class Landing extends React.Component {
-
   constructor() {
     super();
 
     this.addFilter = this.addFilter.bind(this);
     this.addFilterInclusive = this.addFilterInclusive.bind(this);
+    this.addSort = this.addSort.bind(this);
+    this.allNewOnly = this.allNewOnly.bind(this);
     this.clearFilter = this.clearFilter.bind(this);
     this.clearFilterInclusive = this.clearFilterInclusive.bind(this);
     this.getFilterInput = this.getFilterInput.bind(this);
     this.getFilterInputInclusive = this.getFilterInputInclusive.bind(this);
     this.getSearchInput = this.getSearchInput.bind(this);
-    this.handleChangeDataSearchField = this.handleChangeDataSearchField.bind(this);
-    this.handleChangeDateSearchField = this.handleChangeDateSearchField.bind(this);
+    this.getSortField = this.getSortField.bind(this);
+    this.getSortOrder = this.getSortOrder.bind(this);
+    this.handleChangeDropDown = this.handleChangeDropDown.bind(this);
+    this.handleChangeDropDownTimeFilter = this.handleChangeDropDownTimeFilter.bind(this);
     this.handleChangeStart = this.handleChangeStart.bind(this);
     this.handleChangeEnd = this.handleChangeEnd.bind(this);
-    this.handleClickBuilding = this.handleClickBuilding.bind(this);
-    this.handleClickRoom = this.handleClickRoom.bind(this);
-    this.handleClickPriority = this.handleClickPriority.bind(this);
-    this.handleClickStatus = this.handleClickStatus.bind(this);
-    this.handleClickCreated = this.handleClickCreated.bind(this);
-    this.handleClickUpdated = this.handleClickUpdated.bind(this);
+    this.handleClick = this.handleClick.bind(this);
     this.has = this.has.bind(this);
     this.filtering = this.filtering.bind(this);
-    // this.componentDidMount = this.componentDidMount.bind(this);
-
+    this.lastMonth = this.lastMonth.bind(this);
+    this.lastWeek = this.lastWeek.bind(this);
+    this.removeFilterExclusive = this.removeFilterExclusive.bind(this);
+    this.removeFilterInclusive = this.removeFilterInclusive.bind(this);
+    this.timeFilterSwitch = this.timeFilterSwitch.bind(this);
 
     this.state = {
-      b_building: false,
-      b_room: false,
-      b_priority: false,
-      b_status: false,
-      b_created: false,
-      b_updated: false,
+      activeIndexTime: -1,
+      activeIndexInclusive: -1,
       data: [],
-      search: '',
-      search_field: 'building',
-      search_date_field: 'createdOn',
       date_start: moment(),
       date_end: moment(),
-      search_time: false,
+      date_picker_start: true,
+      date_picker_end: true,
+      filter_all_new: false,
       filter_building: [this.has('Webster'), this.has('Sakamaki'), this.has('Critical')],
       filter_priority: [this.has('Regular')],
       filters: [],
       filters_inclusive: [],
+      search: '',
+      search_field: 'building',
+      search_date_field: 'createdOn',
+      search_date_type: '',
+      search_time: false,
+      sort_fields: [],
+      sort_orders: [],
       time_filter_active: false,
+      time_filter_active_month: false,
+      time_filter_active_week: false,
+      time_filter_status: 'Apply Time Filter',
       temp_filter: [],
       temp_filter_inclusive: [],
+      temp_sort_field: '',
+      temp_sort_order: '',
+      visible: false,
     };
   }
+
 
   addFilter() {
     const currArr = this.state.filters;
@@ -121,6 +105,7 @@ class Landing extends React.Component {
     this.setState({ temp_filter_array: _.map(newArr, this.has) });
     this.setState({ temp_filter: '' });
   }
+
   addFilterInclusive() {
     const currArr = this.state.filters_inclusive;
     const newArr = currArr.concat(this.state.temp_filter_inclusive);
@@ -129,29 +114,45 @@ class Landing extends React.Component {
     this.setState({ temp_filter_inclusive: '' });
   }
 
+  addSort() {
+    const currArrField = this.state.sort_fields;
+    const newArrField = currArrField.concat(this.state.temp_sort_field);
+    const currArrOrder = this.state.sort_orders;
+    const newArrOrder = currArrOrder.concat(this.state.temp_sort_order);
+    this.setState({ sort_fields: newArrField });
+    this.setState({ sort_orders: newArrOrder });
+    this.setState({ temp_filter_field: '' });
+    this.setState({ temp_filter_order: '' });
+  }
+
+  allNewOnly() {
+    const allNew = this.state.filter_all_new;
+    if (allNew) {
+      const orgArr = this.state.filters;
+      const newArr = _.remove(orgArr, function (n) { return !(n === 'New'); });
+      this.setState({ filters: newArr, filter_all_new: false });
+      this.setState({ temp_filter_array: _.map(newArr, this.has) });
+    } else {
+      const currArr = this.state.filters;
+      const newArr = currArr.concat('New');
+      this.setState({ filters: newArr, filter_all_new: true });
+      this.setState({ temp_filter_array: _.map(newArr, this.has) });
+    }
+  }
+
+  applySorts(coll) {
+    const arrSortFields = this.state.sort_fields;
+    const arrSortOrders = this.state.sort_orders;
+    if (arrSortFields.length > 0) {
+      return _.orderBy(coll, arrSortFields, arrSortOrders);
+    }
+    return coll;
+  }
+
   clearFilter = () => this.setState({ filters: [] });
   clearFilterInclusive = () => this.setState({ filters_inclusive: [] });
 
-  getFilterInput = (event) => this.setState({ temp_filter: event.target.value.substr(0, 20) });
-  getFilterInputInclusive = (event) => this.setState({ temp_filter_inclusive: event.target.value.substr(0, 20) });
-
-  getSearchInput = (event) => this.setState({ search: event.target.value.substr(0, 20) });
-
-  handleChangeDataSearchField = (e, { name, value }) => this.setState({ [name]: value });
-
-  handleChangeDateSearchField = (e, { name, value }) => this.setState({ [name]: value });
-
-  handleChangeStart = (date) => this.setState({ date_start: date });
-  handleChangeEnd = (date) => this.setState({ date_end: date });
-
-  handleClickBuilding = () => this.setState({ b_building: !this.state.b_building });
-  handleClickRoom = () => this.setState({ b_room: !this.state.b_room });
-  handleClickPriority = () => this.setState({ b_priority: !this.state.b_priority });
-  handleClickStatus = () => this.setState({ b_status: !this.state.b_status });
-  handleClickCreated = () => this.setState({ b_created: !this.state.b_created });
-  handleClickUpdated = () => this.setState({ b_updated: !this.state.b_updated });
-
-  has = (criteria) => function (value) { return _.contains(value, criteria); }
+  clearSort = () => { this.setState({ sort_fields: [] }); this.setState({ sort_orders: [] }); }
 
   filtering = (orgArr, coll) => {
     if (orgArr.length > 0) {
@@ -177,55 +178,114 @@ class Landing extends React.Component {
     return this.props.tickets;
   };
 
-  /**
-  state = {
-    column: null,
-    data: sampleData,
-    direction: null,
-  }
+  getFilterInput = (event) => this.setState({ temp_filter: event.target.value.substr(0, 20) });
+  getFilterInputInclusive = (event) => this.setState({ temp_filter_inclusive: event.target.value.substr(0, 20) });
 
+  getSearchInput = (event) => this.setState({ search: event.target.value.substr(0, 20) });
 
-  handleSort = clickedColumn => () => {
-    const { column, data, direction } = this.state
-
-    if (column !== clickedColumn) {
-      this.setState({
-        column: clickedColumn,
-        data: _.sortBy(data, [clickedColumn]),
-        direction: 'ascending',
-      })
-
-      return
+  handleChangeDropDown = (e, { name, value }) => this.setState({ [name]: value });
+  handleChangeDropDownTimeFilter = (e, { name, value }) => {
+    this.setState({ [name]: value });
+    switch (value) {
+      case 'range':
+        this.setState({ date_picker_start: false, date_picker_end: false });
+        break;
+      default:
+        this.setState({ date_picker_start: false, date_picker_end: true });
     }
-
-    this.setState({
-      data: data.reverse(),
-      direction: direction === 'ascending' ? 'descending' : 'ascending',
-    })
   }
-   */
+
+  handleChangeStart = (date) => this.setState({ date_start: date });
+  handleChangeEnd = (date) => this.setState({ date_end: date });
+
+  handleClick = (e, titleProps) => {
+    const { index } = titleProps;
+    const { activeIndex } = this.state;
+    const newIndex = activeIndex === index ? -1 : index;
+
+    this.setState({ activeIndex: newIndex });
+  }
+
+  has = (criteria) => function (value) { return _.includes(value, criteria); }
 
   lastMonth() {
-    this.setState({ date_end: moment().subtract(31, 'days') });
-    this.setState({ time_filter_active: true });
+    this.setState({ date_start: moment().subtract(31, 'days') });
+    if (this.state.time_filter_active_month === false) {
+      this.setState({ time_filter_active_month: true, time_filter_status: 'Time Filter Off' });
+      if (this.state.time_filter_active === false) {
+        this.setState({ time_filter_active: true });
+      }
+    } else {
+      this.setState({ time_filter_active: false, time_filter_active_month: false });
+    }
   }
 
   lastWeek() {
-    this.setState({ date_end: moment().subtract(7, 'days') });
-    this.setState({ time_filter_active: true });
+    this.setState({ date_start: moment().subtract(7, 'days') });
+    if (this.state.time_filter_active_week === false) {
+      this.setState({ time_filter_active_week: true, time_filter_status: 'Time Filter Off' });
+      if (this.state.time_filter_active === false) {
+        this.setState({ time_filter_active: true });
+      }
+    } else {
+      this.setState({ time_filter_active: false, time_filter_active_week: false });
+    }
   }
 
-  timeFilterOff = () => this.setState({ time_filter_active: false });
+  removeFilterExclusive(e, titleProps) {
+    const content = titleProps.mycontent;
+    const orgArr = this.state.filters;
+    const newArr = _.remove(orgArr, function (n) { return !(content === n); });
+    this.setState({ filters: newArr });
+    this.setState({ temp_filter_array: _.map(newArr, this.has) });
+  }
+
+  removeFilterInclusive(e, titleProps) {
+    const content = titleProps.mycontent;
+    const orgArr = this.state.filters_inclusive;
+    const newArr = _.remove(orgArr, function (n) { return !(content === n); });
+    this.setState({ filters_inclusive: newArr });
+    this.setState({ temp_filter_array_inclusive: _.map(newArr, this.has) });
+  }
+
+  timeFilterSwitch = () => this.setState({
+    time_filter_active: !this.state.time_filter_active,
+    time_filter_active_month: false,
+    time_filter_active_week: false,
+  });
 
   timeFilter(coll) {
     const filterOn = this.state.time_filter_active;
+    const filterType = this.state.search_date_type;
+    const sDate = this.state.date_start;
+    const eDate = this.state.date_end;
 
-    if (filterOn) {
+    if (filterOn && (sDate !== null) && (filterType !== null)) {
       const field_to_query = this.state.search_date_field;
-      const end_date = this.state.date_end;
-      return coll.filter((t) => moment(t[field_to_query]).isAfter(end_date));
+
+      switch (filterType) {
+        case 'after':
+          return coll.filter((t) => moment(t[field_to_query]).isBefore(moment(sDate).startOf('day')), 'day');
+        case 'before':
+          return coll.filter((t) =>
+              moment(t[field_to_query]).isAfter(moment(sDate).endOf('day')), 'day');
+        case 'range':
+          return coll.filter((t) =>
+              moment(t[field_to_query]).isBetween(moment(sDate).startOf('day'), moment(eDate).endOf('day')), 'day');
+        default:
+          return coll.filter((t) =>
+              moment(t[field_to_query]).isSameOrAfter(sDate.endOf('day')), 'day');
+      }
     }
     return coll;
+  }
+
+  getSortField = (field) => _.head(field);
+  getSortOrder(field) {
+    if (_.last(field) === 'desc') {
+      return 'sort content descending';
+    }
+    return 'sort content ascending';
   }
 
   render() {
@@ -233,76 +293,223 @@ class Landing extends React.Component {
   }
 
   renderPage() {
-    const b_building = this.state.b_building;
-    const b_room = this.state.b_room;
-    const b_priority = this.state.b_priority;
-    const b_status = this.state.b_status;
-    const b_created = this.state.b_created;
-    const b_updated = this.state.b_updated;
+    const activeIndex = this.state.activeIndex;
     const f_list = this.state.filters;
     const f_list_inclusive = this.state.filters_inclusive;
-
+    const s_list = _.zip(this.state.sort_fields, this.state.sort_orders);
     const collFilteredInclusive = this.filteringInclusive(f_list_inclusive);
     const collFiltered = this.filtering(f_list, collFilteredInclusive);
     const collSearched = collFiltered.filter((t) => t[this.state.search_field].indexOf(this.state.search) !== -1);
-
     const collTimeSearchTickets = this.timeFilter(collSearched);
-
+    const collSorted = this.applySorts(collTimeSearchTickets);
     const menuStyle = { fontFamily: 'Trebuchet MS' };
 
     return (
         <div className='background-landing'>
           <Menu style={menuStyle} >
-            <Dropdown text='Sort By' pointing className='link item'>
-              <Dropdown.Menu>
-                <Dropdown.Item>
-                  <Dropdown text='Date Created'>
-                    <Dropdown.Menu>
-                      <Dropdown.Item>Today</Dropdown.Item>
-                      <Dropdown.Item>Yesterday</Dropdown.Item>
-                      <Dropdown.Item>This Week</Dropdown.Item>
-                      <Dropdown.Item>Last Week</Dropdown.Item>
-                      <Dropdown.Item>This Month</Dropdown.Item>
-                      <Dropdown.Item>Last Month</Dropdown.Item>
-                      <Dropdown.Item>This Year</Dropdown.Item>
-                      <Dropdown.Item>Last Year</Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </Dropdown.Item>
-                <Dropdown.Item>
-                  <Dropdown text='Date Updated'>
-                    <Dropdown.Menu>
-                      <Dropdown.Item>Today</Dropdown.Item>
-                      <Dropdown.Item>Yesterday</Dropdown.Item>
-                      <Dropdown.Item>This Week</Dropdown.Item>
-                      <Dropdown.Item>Last Week</Dropdown.Item>
-                      <Dropdown.Item>This Month</Dropdown.Item>
-                      <Dropdown.Item>Last Month</Dropdown.Item>
-                      <Dropdown.Item>This Year</Dropdown.Item>
-                      <Dropdown.Item>Last Year</Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-            <Menu.Item>
+              <Menu.Item>
+                <Dropdown
+                    button
+                    name = 'search_field'
+                    type = 'text'
+                    placeholder = 'Search Fields'
+                    options = {_.filter(dbAllFields, (i) => i.key < 8)}
+                    value = {this.state.search_field}
+                    onChange = {this.handleChangeDropDown}
+                />
+                <Form.Input
+                    icon = 'search'
+                    placeholder = ''
+                    type = 'text'
+                    value = {this.state.search}
+                    onChange = {this.getSearchInput}
+                />
+              </Menu.Item>
+              <Menu.Item
+                  name='allNewOnly'
+                  active={this.state.filter_all_new}
+                  onClick={this.allNewOnly}
+              >
+                All New Only
+              </Menu.Item>
+              <Menu.Item
+                  name='days31last'
+                  active={this.state.time_filter_active_month}
+                  onClick={this.lastMonth}
+              >
+                Last Month
+              </Menu.Item>
+              <Menu.Item
+                  name='days07last'
+                  active={this.state.time_filter_active}
+                  onClick={this.lastWeek}
+              >
+                Last Week
+              </Menu.Item>
+            </Menu>
+            <Accordion fluid styled>
+              <Accordion.Title
+                  name = 'activeIndexTime'
+                  active={this.state.activeIndexTime === 0} index={0} onClick={this.handleClick}>
+                <Icon name='dropdown' />
+                Time Filter
+              </Accordion.Title>
+              <Accordion.Content active={activeIndex === 0}>
+                <Menu>
+                  <Dropdown
+                      button
+                      name = 'search_date_type'
+                      type = 'text'
+                      placeholder = 'Date Field To Query'
+                      options = {timeSearchType}
+                      value = {this.state.search_date_type}
+                      onChange = {this.handleChangeDropDownTimeFilter}
+                  />
+                  <Dropdown
+                      button
+                      name = 'search_date_field'
+                      type = 'text'
+                      placeholder = 'Date Field To Query'
+                      options = {_.filter(dbAllFields, (i) => i.key > 7)}
+                      value = {this.state.search_date_field}
+                      onChange = {this.handleChangeDropDown}
+                  />
+                  <Menu.Item active={this.state.date_picker_start}>
+                    <DatePicker
+                        showYearDropdown
+                        disabled={this.state.date_picker_start}
+                        isClearable={true}
+                        selected = {this.state.date_start}
+                        selectsStart
+                        startDate={this.state.date_start}
+                        endDate={this.state.date_end}
+                        onChange = {this.handleChangeStart}
+                    />
+                  </Menu.Item>
+                  <Menu.Item active={this.state.date_picker_end}>
+                    <DatePicker
+                        disabled={this.state.date_picker_end}
+                        showYearDropdown
+                        isClearable={true}
+                        selected = {this.state.date_end}
+                        selectsEnd
+                        startDate={this.state.date_start}
+                        endDate={this.state.date_end}
+                        onChange = {this.handleChangeEnd}
+                    />
+                  </Menu.Item>
+                  <Menu.Item
+                      name='applyTimeFilter'
+                      onClick={this.timeFilterSwitch}
+                  >
+                    {this.state.time_filter_status}
+                  </Menu.Item>
+                </Menu>
+              </Accordion.Content>
+              <Accordion.Title name = 'activeIndexInclusive'
+                               active={this.state.activeIndex === 1} index={1} onClick={this.handleClick}>
+                <Icon name='dropdown' />
+                Text Filters
+              </Accordion.Title>
+              <Accordion.Content active={activeIndex === 1}>
+                <Menu>
+                  <Form.Input
+                      icon = 'search'
+                      placeholder = 'Inclusive Filter'
+                      type = 'text'
+                      value = {this.state.temp_filter_inclusive}
+                      onChange = {this.getFilterInputInclusive}
+                  />
+                  <Menu.Item
+                      name='addFilter'
+                      onClick={this.addFilterInclusive}
+                  >
+                    Add Inclusive Filter
+                  </Menu.Item>
+                  <Menu.Item
+                      name='clearFilter'
+                      onClick={this.clearFilterInclusive}
+                  >
+                    Clear Inclusive Filter
+                  </Menu.Item>
+                </Menu>
+                <List>
+                  {f_list_inclusive.map((filter, index) =>
+                      <Button key={index} mycontent={filter} onClick={this.removeFilterInclusive}>
+                        {filter}
+                        <Icon name = 'delete' />
+                      </Button>)}
+                </List>
+                <Menu>
+                  <Form.Input
+                      icon = 'search'
+                      placeholder = 'Exclusive Filter'
+                      type = 'text'
+                      value = {this.state.temp_filter}
+                      onChange = {this.getFilterInput}
+                  />
+                  <Menu.Item
+                      name='addFilter'
+                      onClick={this.addFilter}
+                  >
+                    Add Exclusive Filter
+                  </Menu.Item>
+                  <Menu.Item
+                      name='clearFilter'
+                      onClick={this.clearFilter}
+                  >
+                    Clear Exclusive Filter
+                  </Menu.Item>
+                </Menu>
+                <List>
+                  {f_list.map((filter, index) =>
+                      <Button name = 'activeIndexExclusive'
+                              key={index} mycontent={filter} onClick={this.removeFilterExclusive}>
+                        {filter}
+                        <Icon name = 'delete' />
+                      </Button>)}
+                </List>
+              </Accordion.Content>
+            </Accordion>
+            <Menu>
               <Dropdown
                   button
-                  name = 'search_field'
+                  name = 'temp_sort_field'
                   type = 'text'
-                  placeholder = 'Search Fields'
-                  options = {dbDataFields}
-                  value = {this.state.search_field}
-                  onChange = {this.handleChangeDataSearchField}
+                  placeholder = 'Sort Fields'
+                  options = {dbAllFields}
+                  value = {this.state.temp_sort_field}
+                  onChange = {this.handleChangeDropDownTimeFilter}
               />
-              <Form.Input
-                  icon = 'search'
-                  placeholder = ''
+              <Dropdown
+                  button
+                  name = 'temp_sort_order'
                   type = 'text'
-                  value = {this.state.search}
-                  onChange = {this.getSearchInput}
+                  placeholder = 'Sort Order'
+                  options = {sortOrder}
+                  value = {this.state.temp_sort_order}
+                  onChange = {this.handleChangeDropDown }
               />
-            </Menu.Item>
+              <Menu.Item
+                  name='addSort'
+                  onClick={this.addSort}
+              >
+                Add Sort
+              </Menu.Item>
+              <Menu.Item
+                  name='clearSort'
+                  onClick={this.clearSort}
+              >
+                Clear Sorts
+              </Menu.Item>
+              <Menu.Item>
+                <List>
+                  {s_list.map((sort, index) =>
+                      <Menu.Item key={index} content={sort}>
+                        {this.getSortField(sort)} <Icon name={this.getSortOrder(sort)} />
+                      </Menu.Item>)}
+                </List>
+              </Menu.Item>
           </Menu>
           <Table sortable celled selectable fixed>
             <Table.Header>
@@ -312,50 +519,32 @@ class Landing extends React.Component {
                 </Table.HeaderCell>
                 <Table.HeaderCell>
                   Building
-                  <Button compact size='mini' toggle active={b_building} onClick={this.handleClickBuilding}>
-                    <Icon name='sort content descending'/>
-                  </Button>
                 </Table.HeaderCell>
                 <Table.HeaderCell>
                   Floor
                 </Table.HeaderCell>
                 <Table.HeaderCell>
                   Room
-                  <Button compact size='mini' toggle active={b_room} onClick={this.handleClickRoom}>
-                    <Icon name='sort content descending'/>
-                  </Button>
                 </Table.HeaderCell>
                 <Table.HeaderCell>
                   Priority
-                  <Button compact size='mini' toggle active={b_priority} onClick={this.handleClickPriority}>
-                    <Icon name='sort content descending'/>
-                  </Button>
                 </Table.HeaderCell>
                 <Table.HeaderCell>
                   Description
                 </Table.HeaderCell>
                 <Table.HeaderCell>
                   Ticket Status
-                  <Button compact size='mini' toggle active={b_status} onClick={this.handleClickStatus}>
-                    <Icon name='sort content descending'/>
-                  </Button>
                 </Table.HeaderCell>
                 <Table.HeaderCell>
                   Date Created
-                  <Button compact size='mini' toggle active={b_created} onClick={this.handleClickCreated}>
-                    <Icon name='sort content descending'/>
-                  </Button>
                 </Table.HeaderCell>
                 <Table.HeaderCell>
                   Date Updated
-                  <Button compact size='mini' toggle active={b_updated} onClick={this.handleClickUpdated}>
-                    <Icon name='sort content descending'/>
-                  </Button>
                 </Table.HeaderCell>
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {collTimeSearchTickets.map((ticket, index) => <Ticket key={index} ticket={ticket} />)}
+              {collSorted.map((ticket, index) => <Ticket key={index} ticket={ticket} />)}
             </Table.Body>
           </Table>
         </div>
