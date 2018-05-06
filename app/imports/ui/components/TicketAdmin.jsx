@@ -97,7 +97,6 @@ class TicketAdmin extends React.Component {
             <Menu>
               <Menu.Item>
                 <Dropdown
-                    button
                     name = 'update_status'
                     type = 'text'
                     placeholder = 'Update Status'
