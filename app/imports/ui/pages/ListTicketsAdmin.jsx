@@ -1,7 +1,7 @@
 import React from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Accordion, Button, Container, Dropdown,
-  Form, Header, Icon, List, Loader, Menu, Table } from 'semantic-ui-react';
+  Form, Header, Icon, List, Loader, Menu, Pagination, Table } from 'semantic-ui-react';
 import { Tickets } from '/imports/api/ticket/ticket';
 import { withTracker } from 'meteor/react-meteor-data';
 import PropTypes from 'prop-types';
@@ -56,6 +56,7 @@ class ListTickets extends React.Component {
     this.handleChangeStart = this.handleChangeStart.bind(this);
     this.handleChangeEnd = this.handleChangeEnd.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.handlePaginationChange = this.handlePaginationChange.bind(this);
     this.has = this.has.bind(this);
     this.filtering = this.filtering.bind(this);
     this.lastMonth = this.lastMonth.bind(this);
@@ -77,7 +78,7 @@ class ListTickets extends React.Component {
       filter_priority: [this.has('Regular')],
       filters: [],
       filters_inclusive: [],
-            search: '',
+      search: '',
       search_field: 'building',
       search_date_field: 'createdOn',
       search_date_type: '',
@@ -92,10 +93,10 @@ class ListTickets extends React.Component {
       temp_filter_inclusive: [],
       temp_sort_field: '',
       temp_sort_order: '',
-      visible: false,
+      tickets_page: 1,
+      tickets_per_page: 5,
     };
   }
-
 
   addFilter() {
     const currArr = this.state.filters;
@@ -181,6 +182,13 @@ class ListTickets extends React.Component {
   getFilterInputInclusive = (event) => this.setState({ temp_filter_inclusive: event.target.value.substr(0, 20) });
 
   getSearchInput = (event) => this.setState({ search: event.target.value.substr(0, 20) });
+  getSortField = (field) => _.head(field);
+  getSortOrder(field) {
+    if (_.last(field) === 'desc') {
+      return 'sort content descending';
+    }
+    return 'sort content ascending';
+  }
 
   handleChangeDropDown = (e, { name, value }) => this.setState({ [name]: value });
   handleChangeDropDownTimeFilter = (e, { name, value }) => {
@@ -205,6 +213,7 @@ class ListTickets extends React.Component {
     this.setState({ activeIndex: newIndex });
   }
 
+  handlePaginationChange = (e, { activePage }) => this.setState({ tickets_page: activePage })
   has = (criteria) => function (value) { return _.includes(value, criteria); }
 
   lastMonth() {
@@ -279,14 +288,6 @@ class ListTickets extends React.Component {
     return coll;
   }
 
-  getSortField = (field) => _.head(field);
-  getSortOrder(field) {
-    if (_.last(field) === 'desc') {
-      return 'sort content descending';
-    }
-    return 'sort content ascending';
-  }
-
   /** If the subscription(s) have been received, render the page, otherwise show a loading icon. */
   render() {
     return (this.props.ready) ? this.renderPage() : <Loader>Getting data</Loader>;
@@ -303,7 +304,12 @@ class ListTickets extends React.Component {
     const collSearched = collFiltered.filter((t) => t[this.state.search_field].indexOf(this.state.search) !== -1);
     const collTimeSearchTickets = this.timeFilter(collSearched);
     const collSorted = this.applySorts(collTimeSearchTickets);
-
+    const currentPage = this.state.tickets_page;
+    const ticketsPerPage = this.state.tickets_per_page;
+    const indexOfLastTicket = currentPage * ticketsPerPage;
+    const indexOfFirstTicket = indexOfLastTicket - ticketsPerPage;
+    const finalSetOfTickets = collSorted.slice(indexOfFirstTicket, indexOfLastTicket);
+    const maxPage = Math.ceil(collSorted.length / ticketsPerPage);
 
     return (
         <Container>
@@ -547,9 +553,10 @@ class ListTickets extends React.Component {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {collSorted.map((ticket, index) => <TicketAdmin key={index} ticket={ticket} />)}
+              {finalSetOfTickets.map((ticket, index) => <TicketAdmin key={index} ticket={ticket} />)}
             </Table.Body>
           </Table>
+          <Pagination activePage={currentPage} onPageChange={this.handlePaginationChange} totalPages={maxPage} />
         </Container>
     );
   }
