@@ -76,7 +76,7 @@ class TicketAdmin extends React.Component {
     if (this.props.ticket.createdOn.getTime() === this.props.ticket.updatedOn.getTime()) {
       return 'No Update';
     }
-      return this.props.ticket.updatedOn.toLocaleDateString('en-US');
+    return this.props.ticket.updatedOn.toLocaleDateString('en-US');
   };
 
   assignRowBackgroundColor= (priorityLevel) => bgColors[priorityLevel];
@@ -94,18 +94,14 @@ class TicketAdmin extends React.Component {
           <Table.Cell>{this.props.ticket.createdOn.toLocaleDateString('en-US')}</Table.Cell>
           <Table.Cell>{this.updatedOnStatus()}</Table.Cell>
           <Table.Cell>
-            <Menu>
-              <Menu.Item>
-                <Dropdown
-                    name = 'update_status'
-                    type = 'text'
-                    placeholder = 'Update Status'
-                    options = {updateOptions}
-                    // value = {this.state.update_status}
-                    onChange = {this.handleChangeDropDown}
-                />
-              </Menu.Item>
-            </Menu>
+            <Dropdown
+                button
+                name = 'update_status'
+                type = 'text'
+                placeholder = 'Update Status'
+                options = {updateOptions}
+                onChange = {this.handleChangeDropDown}
+            />
           </Table.Cell>
           <Table.Cell>
             <Button onClick={this.onClick}>
