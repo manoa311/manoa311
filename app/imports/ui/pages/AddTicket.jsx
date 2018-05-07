@@ -9,6 +9,8 @@ import HiddenField from 'uniforms-semantic/HiddenField';
 import ErrorsField from 'uniforms-semantic/ErrorsField';
 import { Bert } from 'meteor/themeteorchef:bert';
 import { Meteor } from 'meteor/meteor';
+import { Redirect } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 /** Renders the Page for adding a document. */
 class AddTicket extends React.Component {
@@ -20,6 +22,7 @@ class AddTicket extends React.Component {
     this.insertCallback = this.insertCallback.bind(this);
     this.currDate = new Date();
     this.formRef = null;
+    this.state = { redirect: false };
   }
 
   /** Notify the user of the results of the submit. If successful, clear the form. */
@@ -39,12 +42,16 @@ class AddTicket extends React.Component {
     const updatedOn = this.currDate;
 
     Tickets.insert({ building, floor, room, description, priority, votes, status, createdOn, updatedOn, owner }, this.insertCallback);
+
+    this.setState({redirect: true});
   }
 
   /** TODO: Add image field */
 
   /** Render the form. Use Uniforms: https://github.com/vazco/uniforms */
   render() {
+    const { redirect } = this.state
+
     return (
         <Grid container centered>
           <Grid.Column>
@@ -65,10 +72,15 @@ class AddTicket extends React.Component {
                 <HiddenField name='updatedOn' value='2018-01-01T00:00:00Z'/>
               </Segment>
             </AutoForm>
+            {redirect && (<Redirect to={'/'}/>)}
           </Grid.Column>
         </Grid>
     );
   }
 }
+
+AddTicket.propTypes = {
+  ticket: PropTypes.object.isRequired,
+};
 
 export default AddTicket;
