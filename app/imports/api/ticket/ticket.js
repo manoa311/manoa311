@@ -11,6 +11,7 @@ const TicketSchema = new SimpleSchema({
   floor: String,
   room: String,
   description: String,
+  longdescription: String,
   priority: String,
   votes: Number,
   status: String,
