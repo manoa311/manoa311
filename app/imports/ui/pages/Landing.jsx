@@ -528,7 +528,13 @@ class Landing extends React.Component {
                   Vote
                 </Table.HeaderCell>
                 <Table.HeaderCell>
-                  Building
+                  Priority
+                </Table.HeaderCell>
+                <Table.HeaderCell>
+                  Ticket Status
+                </Table.HeaderCell>
+                <Table.HeaderCell>
+                  Description
                 </Table.HeaderCell>
                 <Table.HeaderCell>
                   Floor
@@ -537,13 +543,7 @@ class Landing extends React.Component {
                   Room
                 </Table.HeaderCell>
                 <Table.HeaderCell>
-                  Priority
-                </Table.HeaderCell>
-                <Table.HeaderCell>
-                  Description
-                </Table.HeaderCell>
-                <Table.HeaderCell>
-                  Ticket Status
+                  Building
                 </Table.HeaderCell>
                 <Table.HeaderCell>
                   Date Created

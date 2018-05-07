@@ -58,12 +58,12 @@ class Ticket extends React.Component {
         <Table.Row style={tableStyle}>
           <Table.Cell collapsing selectable><Button.Group basic><Button onClick={this.handleUp} icon><Icon name = 'angle up' /> </Button>
             <Button onClick={this.handleDown} icon><Icon name = 'angle down' /></Button> </Button.Group><Label circular>{logCount}</Label> </Table.Cell>
-          <Table.Cell><Link to={`/view/${this.props.ticket._id}`}>{this.props.ticket.building}</Link></Table.Cell>
+          <Table.Cell>{this.props.ticket.priority}</Table.Cell>
+          <Table.Cell>{this.props.ticket.status}</Table.Cell>
+          <Table.Cell><Link to={`/view/${this.props.ticket._id}`}>{this.props.ticket.description}</Link></Table.Cell>
+          <Table.Cell>{this.props.ticket.building}</Table.Cell>
           <Table.Cell>{this.props.ticket.floor}</Table.Cell>
           <Table.Cell>{this.props.ticket.room}</Table.Cell>
-          <Table.Cell>{this.props.ticket.priority}</Table.Cell>
-          <Table.Cell>{this.props.ticket.description}</Table.Cell>
-          <Table.Cell>{this.props.ticket.status}</Table.Cell>
           <Table.Cell>
             {this.props.ticket.createdOn.toLocaleDateString('en-US')}
             <p/>
