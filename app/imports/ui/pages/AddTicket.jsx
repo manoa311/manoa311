@@ -41,9 +41,34 @@ class AddTicket extends React.Component {
     const owner = Meteor.user().username;
     const updatedOn = this.currDate;
 
-    Tickets.insert({ building, floor, room, description, longdescription, priority, votes, status, createdOn, updatedOn, owner }, this.insertCallback);
+    if (description.toString().length > 80 || longdescription.toString().length > 500) {
 
-    this.setState({redirect: true});
+      if (description.toString().length > 80) {
+        Bert.alert({ type: 'danger', message: `Please shorten your description to 80 characters!` });
+      }
+
+      if (longdescription.toString().length > 500) {
+        Bert.alert({ type: 'danger', message: `Please shorten your additional information to 500 characters!` });
+      }
+    }
+    else {
+      Tickets.insert({
+        building,
+        floor,
+        room,
+        description,
+        longdescription,
+        priority,
+        votes,
+        status,
+        createdOn,
+        updatedOn,
+        owner
+      }, this.insertCallback);
+
+      this.setState({ redirect: true });
+    }
+
   }
 
   /** TODO: Add image field */
