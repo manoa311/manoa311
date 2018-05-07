@@ -19,7 +19,7 @@ class NavBar extends React.Component {
     const { activeItem } = this.state;
 
     return (
-      <Menu style={menuStyle} attached="top" inverted tabular>
+      <Menu pointing secondary style={menuStyle} attached="top" inverted tabular>
         <Menu.Item name='landing' active={activeItem === 'landing'} onClick={this.handleItemClick} as={NavLink} activeClassName="" exact to="/">
           <Image src='/images/manoa311logo.png' size='medium'/>
         </Menu.Item>
@@ -30,7 +30,7 @@ class NavBar extends React.Component {
             </Menu.Item>]
         ) : ''}
         {Roles.userIsInRole(Meteor.userId(), 'admin') ? (
-            [<Menu.Item as={NavLink} activeClassName="active" exact to="/admin-ticket" key='admin-ticket'>
+            [<Menu.Item as={NavLink} activeClassName="active" exact to="/admin-ticket" key='admin-ticket' onClick={this.handleItemClick}>
                 Admin-All-Tickets
               </Menu.Item>]
         ) : ''}
