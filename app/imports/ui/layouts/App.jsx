@@ -9,7 +9,7 @@ import Footer from '../components/Footer';
 import Landing from '../pages/Landing';
 import ListContacts from '../pages/ListContacts';
 import ListContactsAdmin from '../pages/ListContactsAdmin';
-import AddContact from '../pages/AddContact';
+import AddTicket from '../pages/AddTicket';
 import EditContact from '../pages/EditContact';
 import ViewTicket from '../pages/ViewTicket';
 import NotFound from '../pages/NotFound';
@@ -32,7 +32,7 @@ class App extends React.Component {
               <Route path="/signin" component={Signin}/>
               <Route path="/signup" component={Signup}/>
               <ProtectedRoute path="/list" component={ListContacts}/>
-              <ProtectedRoute path="/add" component={AddContact}/>
+              <ProtectedRoute path="/add" component={AddTicket}/>
               <ProtectedRoute path="/edit/:_id" component={EditContact}/>
               <ProtectedRoute path="/view/:_id" component={ViewTicket}/>
               <AdminProtectedRoute path="/admin-ticket" component={ListTicketsAdmin}/>
