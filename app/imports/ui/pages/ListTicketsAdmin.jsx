@@ -522,7 +522,10 @@ class ListTickets extends React.Component {
 
           <Table compact striped>
             <Table.Header>
-              <Table.Row>
+              <Table.Row textAlign='center'>
+                <Table.HeaderCell>
+                  View Ticket
+                </Table.HeaderCell>
                 <Table.HeaderCell>
                   Priority
                 </Table.HeaderCell>

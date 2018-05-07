@@ -16,6 +16,7 @@ const dbAllFields = [
   { key: 1, value: 'description', text: 'Description' },
   { key: 2, value: 'floor', text: 'Floor' },
   { key: 3, value: 'owner', text: 'Owner' },
+
   { key: 4, value: 'priority', text: 'Priority' },
   { key: 5, value: 'room', text: 'Room' },
   { key: 6, value: 'status', text: 'Status' },
@@ -523,6 +524,9 @@ class ListTickets extends React.Component {
           <Table compact striped>
             <Table.Header>
               <Table.Row>
+                <Table.HeaderCell>
+                  View Ticket
+                </Table.HeaderCell>
                 <Table.HeaderCell>
                   Priority
                 </Table.HeaderCell>
