@@ -89,7 +89,7 @@ class ListTickets extends React.Component {
       time_filter_active: false,
       time_filter_active_month: false,
       time_filter_active_week: false,
-      time_filter_status: 'Apply Time Filter',
+      time_filter_status: 'Time Filter On',
       temp_filter: [],
       temp_filter_inclusive: [],
       temp_sort_field: '',
@@ -225,7 +225,8 @@ class ListTickets extends React.Component {
         this.setState({ time_filter_active: true });
       }
     } else {
-      this.setState({ time_filter_active: false, time_filter_active_month: false });
+      this.setState({ time_filter_active: false, time_filter_active_month: false,
+        time_filter_status: 'Time Filter On' });
     }
   }
 
@@ -237,7 +238,9 @@ class ListTickets extends React.Component {
         this.setState({ time_filter_active: true });
       }
     } else {
-      this.setState({ time_filter_active: false, time_filter_active_week: false });
+      this.setState({
+        time_filter_active: false, time_filter_active_week: false,
+        time_filter_status: 'Time Filter On' });
     }
   }
 
@@ -257,11 +260,19 @@ class ListTickets extends React.Component {
     this.setState({ temp_filter_array_inclusive: _.map(newArr, this.has) });
   }
 
-  timeFilterSwitch = () => this.setState({
-    time_filter_active: !this.state.time_filter_active,
-    time_filter_active_month: false,
-    time_filter_active_week: false,
-  });
+  timeFilterSwitch = () => {
+    this.setState({
+      time_filter_active: !this.state.time_filter_active,
+      time_filter_active_month: false,
+      time_filter_active_week: false,
+    });
+
+    if (this.state.time_filter_active) {
+      this.setState({ time_filter_status: 'Time Filter Off' });
+    } else {
+      this.setState({ time_filter_status: 'Time Filter On' });
+    }
+  }
 
   timeFilter(coll) {
     const filterOn = this.state.time_filter_active;
@@ -336,6 +347,7 @@ class ListTickets extends React.Component {
             </Menu.Item>
             <Menu.Item
                 name='allNewOnly'
+
                 active={this.state.filter_all_new}
                 onClick={this.allNewOnly}
             >
@@ -355,6 +367,46 @@ class ListTickets extends React.Component {
             >
               Last Week
             </Menu.Item>
+
+              <Dropdown
+                  button
+                  name = 'temp_sort_field'
+                  type = 'text'
+                  placeholder = 'Sort Fields'
+                  options = {dbAllFields}
+                  value = {this.state.temp_sort_field}
+                  onChange = {this.handleChangeDropDownTimeFilter}
+              />
+              <Dropdown
+                  button
+                  name = 'temp_sort_order'
+                  type = 'text'
+                  placeholder = 'Sort Order'
+                  options = {sortOrder}
+                  value = {this.state.temp_sort_order}
+                  onChange = {this.handleChangeDropDown }
+              />
+              <Button
+                  name='addSort'
+                  onClick={this.addSort}
+                  disabled={!(this.state.temp_sort_field && this.state.temp_sort_order)}
+              >
+                Add Sort
+              </Button>
+              <Button
+                  name='clearSort'
+                  onClick={this.clearSort}
+              >
+                Clear Sorts
+              </Button>
+
+                <List>
+                  {s_list.map((sort, index) =>
+                      <Menu.Item key={index} content={sort}>
+                        {this.getSortField(sort)} <Icon name={this.getSortOrder(sort)} />
+                      </Menu.Item>)}
+                </List>
+
           </Menu>
           <Accordion fluid styled>
             <Accordion.Title
@@ -480,47 +532,6 @@ class ListTickets extends React.Component {
               </List>
             </Accordion.Content>
           </Accordion>
-          <Menu>
-            <Dropdown
-                button
-                name = 'temp_sort_field'
-                type = 'text'
-                placeholder = 'Sort Fields'
-                options = {dbAllFields}
-                value = {this.state.temp_sort_field}
-                onChange = {this.handleChangeDropDownTimeFilter}
-            />
-            <Dropdown
-                button
-                name = 'temp_sort_order'
-                type = 'text'
-                placeholder = 'Sort Order'
-                options = {sortOrder}
-                value = {this.state.temp_sort_order}
-                onChange = {this.handleChangeDropDown }
-            />
-            <Menu.Item
-                name='addSort'
-                onClick={this.addSort}
-            >
-              Add Sort
-            </Menu.Item>
-            <Menu.Item
-                name='clearSort'
-                onClick={this.clearSort}
-            >
-              Clear Sorts
-            </Menu.Item>
-            <Menu.Item>
-              <List>
-                {s_list.map((sort, index) =>
-                    <Menu.Item key={index} content={sort}>
-                      {this.getSortField(sort)} <Icon name={this.getSortOrder(sort)} />
-                    </Menu.Item>)}
-              </List>
-            </Menu.Item>
-          </Menu>
-
           <Table compact striped>
             <Table.Header>
               <Table.Row>
