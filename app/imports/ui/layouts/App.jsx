@@ -10,6 +10,7 @@ import Landing from '../pages/Landing';
 import ListContacts from '../pages/ListContacts';
 import ListContactsAdmin from '../pages/ListContactsAdmin';
 import AddTicket from '../pages/AddTicket';
+import AddContact from '../pages/AddContact';
 import EditContact from '../pages/EditContact';
 import ViewTicket from '../pages/ViewTicket';
 import NotFound from '../pages/NotFound';
