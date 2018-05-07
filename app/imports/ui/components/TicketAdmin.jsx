@@ -14,9 +14,11 @@ const bgColors = {
 };
 
 const updateOptions = [
-  { key: 0, value: 'In-Progress', text: 'In-Progress' },
-  { key: 1, value: 'Resolved', text: 'Job Resolved' },
-  { key: 2, value: 'Cancelled', text: 'Cancel Ticket' },
+  { key: 0, value: '', text: 'No Change' },
+  { key: 1, value: 'In-Progress', text: 'In-Progress' },
+  { key: 2, value: 'Resolved', text: 'Job Resolved' },
+  { key: 3, value: 'Cancelled', text: 'Cancel Ticket' },
+  { key: 4, value: 'Delete', text: 'Delete Ticket' },
 ];
 
 
@@ -25,9 +27,10 @@ class TicketAdmin extends React.Component {
   constructor(props) {
     super(props);
     this.handleChangeDropDown = this.handleChangeDropDown.bind(this);
-    this.onDelete = this.onDelete.bind(this);
+    this.updateStatus = this.updateStatus.bind(this);
 
     this.state = {
+      temp_update_status: '',
       status: false,
     };
   }
@@ -59,10 +62,17 @@ class TicketAdmin extends React.Component {
     }
   }
 
+  // handleChangeDropDown = (e, { value }) => {
+  //   if (confirm('Are Really Really Sure You Want To Update This Ticket???')) {
+  //     const val = value;
+  //     Tickets.update(this.props.ticket._id, { $set: { status: value } }, this.handleChangeDropDownCallback(val));
+  //     Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
+  //   }
+  // }
+
   handleChangeDropDown = (e, { value }) => {
     const val = value;
-    Tickets.update(this.props.ticket._id, { $set: { status: value } }, this.handleChangeDropDownCallback(val));
-    Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
+    this.setState({ temp_update_status: val });
   }
 
   // handleClick = () => {
@@ -89,6 +99,16 @@ class TicketAdmin extends React.Component {
     return this.props.ticket.updatedOn.toLocaleDateString('en-US');
   };
 
+  updateStatus = () => {
+    const val = this.state.temp_update_status;
+    if (val === 'Delete') {
+      Tickets.remove(this.props.ticket._id, this.deleteCallback);
+    }
+    if (val !== '') {
+      Tickets.update(this.props.ticket._id, { $set: { status: val } }, this.handleChangeDropDownCallback(val));
+      Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
+    }
+  }
 
   render() {
     const gotoStatus = this.state.status;
@@ -128,7 +148,12 @@ class TicketAdmin extends React.Component {
             />
           </Table.Cell>
           <Table.Cell>
-            <Button onClick={this.onDelete} content='Delete' />
+            <Popup
+                on='click'
+                trigger={<Button content='Update Status' disabled={!this.state.temp_update_status} />}
+                content={<Button color='green' onClick={this.updateStatus} content='Update Status' />}
+                position='bottom left'
+            />
           </Table.Cell>
         </Table.Row>
     );
