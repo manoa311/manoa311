@@ -169,8 +169,8 @@ class ViewTicket extends React.Component {
               </Table.Body>
             </Table>
             <Segment>
+              <h4>Description</h4>
               <Table celled fixed>
-                Description
                 <Table.Row>
                   {this.props.ticket.longdescription}
                 </Table.Row>
@@ -180,7 +180,7 @@ class ViewTicket extends React.Component {
               <Label circular>{logCount}</Label>
             </Segment>
             <Segment>
-              Comments
+              <h4>Comments</h4>
               <Feed>
                 {this.props.notes.map((note, index) => <Note key={index} note={note}/>)}
               </Feed>
