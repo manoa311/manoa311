@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Grid, Loader, Header, Segment, Button, Icon, Feed, Label } from 'semantic-ui-react';
+import { Table, Grid, Loader, Header, Segment, Button, Icon, Feed, Label, Dropdown } from 'semantic-ui-react';
 import { Tickets, TicketSchema } from '/imports/api/ticket/ticket';
 import { Bert } from 'meteor/themeteorchef:bert';
 import { Meteor } from 'meteor/meteor';
@@ -9,6 +9,13 @@ import AddNote from '/imports/ui/components/AddNote';
 import Note from '/imports/ui/components/Note';
 import { Roles } from 'meteor/alanning:roles';
 import { Notes } from '/imports/api/note/note';
+import { Redirect } from 'react-router-dom';
+import moment from 'moment';
+
+const updateOptions = [
+  { key: 0, value: 'Resolved', text: 'Job Resolved' },
+  { key: 1, value: 'Cancelled', text: 'Cancel Ticket' },
+];
 
 /** Renders the Page for editing a single document. */
 class ViewTicket extends React.Component {
@@ -18,8 +25,12 @@ class ViewTicket extends React.Component {
     this.state ={
       logCount: this.props.ticket.votes,
       voted: false,
+      redirect: false,
+      status: false,
     };
     this.handleUp = this.handleUp.bind(this);
+    this.deleteTicket = this.deleteTicket.bind(this);
+    this.handleChangeDropDown = this.handleChangeDropDown.bind(this);
   }
 
   handleUp = () => {
@@ -46,6 +57,41 @@ class ViewTicket extends React.Component {
     }
   };
 
+  handleChangeDropDown = (e, { value }) => {
+    const val = value;
+    Tickets.update(this.props.ticket._id, { $set: { status: value } }, this.handleChangeDropDownCallback(val));
+    Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
+  }
+
+  handleChangeDropDownCallback(value, error) {
+    if (error) {
+      Bert.alert({ type: 'danger', message: `Cancel Update Status Failed: ${error.message}` });
+    } else {
+      Bert.alert({ type: 'success', message: `Success! Ticket Status Updated to ${value}` });
+    }
+  }
+
+  updatedOnStatus = () => {
+    if (this.props.ticket.createdOn.getTime() === this.props.ticket.updatedOn.getTime()) {
+      return 'No Update';
+    }
+    return this.props.ticket.updatedOn.toLocaleDateString('en-US');
+  };
+
+  deleteTicket() {
+    if (confirm('Are Really Really Sure You Want To Delete This Ticket???')) {
+      Tickets.remove(this.props.ticket._id);
+      this.setState({ redirect: true });
+    }
+  }
+
+  updatedOnStatus = () => {
+    if (this.props.ticket.createdOn.getTime() === this.props.ticket.updatedOn.getTime()) {
+      return 'No Update';
+    }
+    return this.props.ticket.updatedOn.toLocaleDateString('en-US');
+  };
+
   /** If the subscription(s) have been received, render the page, otherwise show a loading icon. */
   render() {
     return (this.props.ready) ? this.renderPage() : <Loader>Getting data</Loader>;
@@ -54,6 +100,7 @@ class ViewTicket extends React.Component {
   /** Render the form. Use Uniforms: https://github.com/vazco/uniforms */
   renderPage() {
 
+    const { redirect } = this.state;
     const { logCount } = this.state;
 
     return (
@@ -131,8 +178,6 @@ class ViewTicket extends React.Component {
               <Button onClick={this.handleUp}><Icon className='angle up'/></Button>
               <Button onClick={this.handleDown}><Icon className='angle down'/></Button>
               <Label circular>{logCount}</Label>
-              <Button floated='right'><Icon className='star'/></Button>
-              <Button floated='right'><Icon className='exclamation'/></Button>
             </Segment>
             <Segment>
               Comments
@@ -145,12 +190,25 @@ class ViewTicket extends React.Component {
             </Segment>
             {Roles.userIsInRole(Meteor.userId(), 'admin') ? (
                 <Segment>
-                  <Button>Delete</Button>
-                  <Button>Update</Button>
+                  <Button onClick={this.deleteTicket}>
+                    Delete
+                  </Button>
+                  <Dropdown
+                      button
+                      name = 'update_status'
+                      type = 'text'Z
+                      placeholder = 'Update Status'
+                      options = {updateOptions}
+                      onChange = {this.handleChangeDropDown}
+                  />
+                  {redirect && (<Redirect to={'/'}/>)}
                 </Segment>
             ) : ''}
           </Grid.Column>
         </Grid>
+
+
+
     );
   }
 }
