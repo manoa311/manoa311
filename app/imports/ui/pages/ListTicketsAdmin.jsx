@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meteor } from 'meteor/meteor';
-import { Accordion, Button, Container, Dropdown,
+import { Accordion, Button, Dropdown,
   Form, Header, Icon, List, Loader, Menu, Pagination, Table } from 'semantic-ui-react';
 import { Tickets } from '/imports/api/ticket/ticket';
 import { withTracker } from 'meteor/react-meteor-data';
@@ -323,7 +323,7 @@ class ListTickets extends React.Component {
     const maxPage = Math.ceil(collSorted.length / ticketsPerPage);
 
     return (
-        <Container>
+        <div>
           <Header as="h2" textAlign="center" inverted>My Tickets</Header>
           <Menu>
             <Menu.Item>
@@ -571,7 +571,7 @@ class ListTickets extends React.Component {
             </Table.Body>
           </Table>
           <Pagination activePage={currentPage} onPageChange={this.handlePaginationChange} totalPages={maxPage} />
-        </Container>
+        </div>
     );
   }
 }
