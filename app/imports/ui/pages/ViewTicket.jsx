@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Grid, Loader, Header, Segment, Button, Icon, Feed } from 'semantic-ui-react';
+import { Table, Grid, Loader, Header, Segment, Button, Icon, Feed, Label } from 'semantic-ui-react';
 import { Tickets, TicketSchema } from '/imports/api/ticket/ticket';
 import { Bert } from 'meteor/themeteorchef:bert';
 import { Meteor } from 'meteor/meteor';
@@ -13,6 +13,38 @@ import { Notes } from '/imports/api/note/note';
 /** Renders the Page for editing a single document. */
 class ViewTicket extends React.Component {
 
+  constructor(props) {
+    super(props)
+    this.state ={
+      logCount: this.props.ticket.votes,
+      voted: false,
+    };
+    this.handleUp = this.handleUp.bind(this);
+  }
+
+  handleUp = () => {
+    if (!this.state.voted) {
+      this.setState((prevState) => {
+        return {
+          logCount: prevState.logCount + 1,
+          voted: true,
+        }
+      })
+      Tickets.update(this.props.ticket._id, { $set: {votes: this.props.ticket.votes + 1} });
+    }
+  };
+
+  handleDown = () => {
+    if (!this.state.voted) {
+      this.setState((prevState) => {
+        return {
+          logCount: prevState.logCount - 1,
+          voted: true,
+        }
+      })
+      Tickets.update(this.props.ticket._id, { $set: {votes: this.props.ticket.votes - 1} });
+    }
+  };
 
   /** If the subscription(s) have been received, render the page, otherwise show a loading icon. */
   render() {
@@ -21,10 +53,14 @@ class ViewTicket extends React.Component {
 
   /** Render the form. Use Uniforms: https://github.com/vazco/uniforms */
   renderPage() {
+
+    const { logCount } = this.state;
+
     return (
+
         <Grid container centered>
           <Grid.Column>
-            <Header as="h2" textAlign="center">Ticket ####</Header>
+            <Header as="h2" textAlign="center" inverted>Ticket</Header>
             <Table celled fixed>
               <Table.Header>
                 <Table.Row>
@@ -75,9 +111,13 @@ class ViewTicket extends React.Component {
                 </Table.Cell>
                 <Table.Cell>
                   {this.props.ticket.createdOn.toLocaleDateString('en-US')}
+                  <p/>
+                  {this.props.ticket.createdOn.toLocaleTimeString('en-US')}
                 </Table.Cell>
                 <Table.Cell>
                   {this.props.ticket.updatedOn.toLocaleDateString('en-US')}
+                  <p/>
+                  {this.props.ticket.updatedOn.toLocaleTimeString('en-US')}
                 </Table.Cell>
               </Table.Body>
             </Table>
@@ -88,15 +128,16 @@ class ViewTicket extends React.Component {
                   Some long description of the problem
                 </Table.Row>
               </Table>
-              <Button><Icon className='thumbs up'/></Button>
-              <Button><Icon className='thumbs down'/></Button>
+              <Button onClick={this.handleUp}><Icon className='angle up'/></Button>
+              <Button onClick={this.handleDown}><Icon className='angle down'/></Button>
+              <Label circular>{logCount}</Label>
               <Button floated='right'><Icon className='star'/></Button>
               <Button floated='right'><Icon className='exclamation'/></Button>
             </Segment>
             <Segment>
               Comments
               <Feed>
-                {this.props.notes.map((note, index) => <Note key={index} note={note.contactId === this.props.ticket._id}/>)}
+                {this.props.notes.map((note, index) => <Note key={index} note={note}/>)}
               </Feed>
             </Segment>
             <Segment>
@@ -119,7 +160,6 @@ ViewTicket.propTypes = {
   doc: PropTypes.object,
   model: PropTypes.object,
   ready: PropTypes.bool.isRequired,
-  ticket: PropTypes.object.isRequired,
   notes: PropTypes.array.isRequired,
 };
 
@@ -129,10 +169,11 @@ export default withTracker(({ match }) => {
   const documentId = match.params._id;
   // Get access to Contacts documents.
   const subscription = Meteor.subscribe('TicketsAll');
+  const subscription2 = Meteor.subscribe('NotesAll');
   return {
     doc: Tickets.findOne(documentId),
     ticket: Tickets.findOne(documentId),
-    ready: subscription.ready(),
-    notes: Notes.find({}).fetch(),
+    ready: (subscription.ready() && subscription2.ready()),
+    notes: Notes.find({contactId: documentId}).fetch(),
   };
 })(ViewTicket);

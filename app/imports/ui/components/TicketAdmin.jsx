@@ -1,7 +1,7 @@
 import React from 'react';
-import { Button, Dropdown, Menu, Table } from 'semantic-ui-react';
+import { Button, Dropdown, Icon, Popup, Table } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+import { Link, Redirect, withRouter } from 'react-router-dom';
 import { Bert } from 'meteor/themeteorchef:bert';
 import { Tickets } from '/imports/api/ticket/ticket';
 import moment from 'moment';
@@ -9,12 +9,13 @@ import moment from 'moment';
 
 const bgColors = {
   Urgent: '#E9573F',
-  Regular: '#F6BB42',
+  Emergency: '#0cff89',
+  Normal: '#F6BB42',
 };
 
 const updateOptions = [
-  { key: 0, value: 'ticketStatusDone', text: 'Job Done' },
-  { key: 1, value: 'ticketStatusCancelled', text: 'Cancel Ticket' },
+  { key: 0, value: 'Resolved', text: 'Job Resolved' },
+  { key: 1, value: 'Cancelled', text: 'Cancel Ticket' },
 ];
 
 
@@ -23,15 +24,14 @@ class TicketAdmin extends React.Component {
   constructor(props) {
     super(props);
     this.handleChangeDropDown = this.handleChangeDropDown.bind(this);
-    this.onClick = this.onClick.bind(this);
-    // this.ticketStatusCancelled = this.ticketStatusCancelled.bind(this);
-    // this.ticketStatusDone = this.ticketStatusDone.bind(this);
+    this.onDelete = this.onDelete.bind(this);
 
     this.state = {
-      update_status: '',
+      status: false,
     };
   }
 
+  assignRowBackgroundColor= (priorityLevel) => bgColors[priorityLevel];
 
   /** Notify the user of the results of the submit. If successful, clear the form. */
   cancelCallback(error) {
@@ -50,80 +50,84 @@ class TicketAdmin extends React.Component {
       Bert.alert({ type: 'success', message: 'Delete Succeeded' });
     }
   }
-
-  handleChangeDropDown = (e, { name, value }) => {
-    // this.setState({ [name]: value });
-    // const updateAction = () => this.value;
-    // return updateAction;
-    // Tickets.update(this.props.ticket._id, { $set: { status: 'Cancelled' } }, this.cancelCallback);
-    // Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
-    switch (value) {
-      case 'ticketStatusCancelled':
-        Tickets.update(this.props.ticket._id, { $set: { status: 'Cancelled' } }, this.cancelCallback);
-        Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
-        break;
-      case 'ticketStatusDone':
-        Tickets.update(this.props.ticket._id, { $set: { status: 'Done' } });
-        Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
-        break;
-      default:
-        console.log(`${name}: ${value} is not a valid command`);
+  handleChangeDropDownCallback(value, error) {
+    if (error) {
+      Bert.alert({ type: 'danger', message: `Cancel Update Status Failed: ${error.message}` });
+    } else {
+      Bert.alert({ type: 'success', message: `Success! Ticket Status Updated to ${value}` });
     }
-
   }
 
+  handleChangeDropDown = (e, { value }) => {
+    const val = value;
+    Tickets.update(this.props.ticket._id, { $set: { status: value } }, this.handleChangeDropDownCallback(val));
+    Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
+  }
+
+  // handleClick = () => {
+  //   this.setState({ status: true });
+  // }
+  //
+  // handleSubmit = (user) => {
+  //   this.setState({ status: true });
+  //   saveUser(user).then(() => this.props.history.push('/dashboard'););
+  // }
+
   /** On submit, insert the data. */
-  onClick() {
+  onDelete() {
     /* eslint-disable-next-line */
     if (confirm('Are Really Really Sure You Want To Delete This Ticket???')) {
       Tickets.remove(this.props.ticket._id, this.deleteCallback);
     }
   }
 
-  // ticketStatusCancelled() {
-  //   Tickets.update(this.props.ticket._id, { $set: { status: 'Cancelled' } }, this.cancelCallback);
-  //   Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
-  // }
-  //
-  // ticketStatusDone() {
-  //   Tickets.update(this.props.ticket._id, { $set: { status: 'Done' } });
-  //   Tickets.update(this.props.ticket._id, { $set: { updatedOn: moment().toDate() } });
-  // }
+  updatedOnStatus = () => {
+    if (this.props.ticket.createdOn.getTime() === this.props.ticket.updatedOn.getTime()) {
+      return 'No Update';
+    }
+    return this.props.ticket.updatedOn.toLocaleDateString('en-US');
+  };
 
 
   render() {
-    const assignRowBackgroundColor = (priorityLevel) => bgColors[priorityLevel];
+    const gotoStatus = this.state.status;
+
+    if (gotoStatus) {
+      return <Redirect to={`/view/${this.props.ticket._id}`} />;
+    }
 
     return (
-        <Table.Row style={{ backgroundColor: assignRowBackgroundColor(this.props.ticket.priority) }}>
+        <Table.Row style={{ backgroundColor: this.assignRowBackgroundColor(this.props.ticket.priority) }}>
+          <Table.Cell textAlign='center'>
+            <Link to={`/view/${this.props.ticket._id}`}>
+              <Popup
+                  trigger={<Icon name='ticket' size='large' />}
+                  content={`Click to View Ticket ${this.props.ticket._id}`}
+                  position='bottom left'
+              />
+            </Link>
+          </Table.Cell>
+          <Table.Cell>{this.props.ticket.priority}</Table.Cell>
+          <Table.Cell>{this.props.ticket.status}</Table.Cell>
           <Table.Cell>{this.props.ticket.building}</Table.Cell>
           <Table.Cell>{this.props.ticket.floor}</Table.Cell>
           <Table.Cell>{this.props.ticket.room}</Table.Cell>
-          <Table.Cell>{this.props.ticket.priority}</Table.Cell>
           <Table.Cell>{this.props.ticket.description}</Table.Cell>
-          <Table.Cell>{this.props.ticket.status}</Table.Cell>
           <Table.Cell>{this.props.ticket.votes}</Table.Cell>
           <Table.Cell>{this.props.ticket.createdOn.toLocaleDateString('en-US')}</Table.Cell>
-          <Table.Cell>{this.props.ticket.updatedOn.toLocaleDateString('en-US')}</Table.Cell>
+          <Table.Cell>{this.updatedOnStatus()}</Table.Cell>
           <Table.Cell>
-            <Menu>
-              <Menu.Item>
-                <Dropdown
-                    button
-                    name = 'update_status'
-                    type = 'text'
-                    placeholder = 'Update Staus'
-                    options = {updateOptions}
-                    // value = {this.state.update_status}
-                    onChange = {this.handleChangeDropDown}
-                />
-              </Menu.Item>
-            </Menu>
+            <Dropdown
+                button
+                name = 'update_status'
+                type = 'text'Z
+                placeholder = 'Update Status'
+                options = {updateOptions}
+                onChange = {this.handleChangeDropDown}
+            />
           </Table.Cell>
           <Table.Cell>
-            <Button onClick={this.onClick}>
-              Delete
-            </Button>
+            <Button onClick={this.onDelete} content='Delete' />
           </Table.Cell>
         </Table.Row>
     );
