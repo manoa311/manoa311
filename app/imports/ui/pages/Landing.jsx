@@ -340,7 +340,7 @@ class Landing extends React.Component {
                   active={this.state.filter_all_new}
                   onClick={this.allNewOnly}
               >
-                All New Only
+                List All New Tickets
               </Menu.Item>
               <Menu.Item
                   name='days31last'
@@ -528,6 +528,15 @@ class Landing extends React.Component {
                   Vote
                 </Table.HeaderCell>
                 <Table.HeaderCell>
+                  Priority
+                </Table.HeaderCell>
+                <Table.HeaderCell>
+                  Ticket Status
+                </Table.HeaderCell>
+                <Table.HeaderCell>
+                  Description
+                </Table.HeaderCell>
+                <Table.HeaderCell>
                   Building
                 </Table.HeaderCell>
                 <Table.HeaderCell>
@@ -535,15 +544,6 @@ class Landing extends React.Component {
                 </Table.HeaderCell>
                 <Table.HeaderCell>
                   Room
-                </Table.HeaderCell>
-                <Table.HeaderCell>
-                  Priority
-                </Table.HeaderCell>
-                <Table.HeaderCell>
-                  Description
-                </Table.HeaderCell>
-                <Table.HeaderCell>
-                  Ticket Status
                 </Table.HeaderCell>
                 <Table.HeaderCell>
                   Date Created

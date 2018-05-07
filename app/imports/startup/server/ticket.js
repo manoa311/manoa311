@@ -35,15 +35,6 @@ Meteor.publish('MyTickets', function publish() {
   return this.ready();
 });
 
-/** This subscription publishes all unresolved tickets, regardless of user*/
-Meteor.publish('UnresolvedTickets', function publish() {
-  if (this.userId) {
-    const username = Meteor.users.findOne(this.userId).username;
-    return Tickets.find({ owner: username });
-  }
-  return this.ready();
-});
-
 /** This subscription publishes all documents regardless of user, but only if the logged in user is the Admin. */
 Meteor.publish('TicketsAdmin', function publish() {
   if (this.userId && Roles.userIsInRole(this.userId, 'admin')) {
