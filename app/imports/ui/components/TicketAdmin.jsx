@@ -14,8 +14,9 @@ const bgColors = {
 };
 
 const updateOptions = [
-  { key: 0, value: 'Resolved', text: 'Job Resolved' },
-  { key: 1, value: 'Cancelled', text: 'Cancel Ticket' },
+  { key: 0, value: 'In-Progress', text: 'In-Progress' },
+  { key: 1, value: 'Resolved', text: 'Job Resolved' },
+  { key: 2, value: 'Cancelled', text: 'Cancel Ticket' },
 ];
 
 
@@ -120,7 +121,7 @@ class TicketAdmin extends React.Component {
             <Dropdown
                 button
                 name = 'update_status'
-                type = 'text'Z
+                type = 'text'
                 placeholder = 'Update Status'
                 options = {updateOptions}
                 onChange = {this.handleChangeDropDown}
