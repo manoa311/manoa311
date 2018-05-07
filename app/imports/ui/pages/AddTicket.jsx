@@ -1,5 +1,5 @@
 import React from 'react';
-import { Contacts, ContactSchema } from '/imports/api/contact/contact';
+import { Tickets, TicketSchema } from '/imports/api/ticket/ticket';
 import { Grid, Segment, Header } from 'semantic-ui-react';
 import AutoForm from 'uniforms-semantic/AutoForm';
 import TextField from 'uniforms-semantic/TextField';
@@ -11,13 +11,14 @@ import { Bert } from 'meteor/themeteorchef:bert';
 import { Meteor } from 'meteor/meteor';
 
 /** Renders the Page for adding a document. */
-class AddContact extends React.Component {
+class AddTicket extends React.Component {
 
   /** Bind 'this' so that a ref to the Form can be saved in formRef and communicated between render() and submit(). */
   constructor(props) {
     super(props);
     this.submit = this.submit.bind(this);
     this.insertCallback = this.insertCallback.bind(this);
+    this.currDate = new Date();
     this.formRef = null;
   }
 
@@ -33,9 +34,11 @@ class AddContact extends React.Component {
 
   /** On submit, insert the data. */
   submit(data) {
-    const { ticketName, building, room, description } = data;
-    const issuedBy = Meteor.user().username;
-    Contacts.insert({ ticketName, building, room, description, issuedBy }, this.insertCallback);
+    const { building, floor, room, description, priority, votes, status, createdOn } = data;
+    const owner = Meteor.user().username;
+    const updatedOn = this.currDate;
+
+    Tickets.insert({ building, floor, room, description, priority, votes, status, createdOn, updatedOn, owner }, this.insertCallback);
   }
 
   /** TODO: Add image field */
@@ -46,15 +49,20 @@ class AddContact extends React.Component {
         <Grid container centered>
           <Grid.Column>
             <Header as="h2" textAlign="center" inverted>Add Ticket</Header>
-            <AutoForm ref={(ref) => { this.formRef = ref; }} schema={ContactSchema} onSubmit={this.submit}>
+            <AutoForm ref={(ref) => { this.formRef = ref; }} schema={TicketSchema} onSubmit={this.submit}>
               <Segment>
-                <TextField name='ticketName'/>
                 <TextField name='building'/>
+                <TextField name='floor'/>
                 <TextField name='room'/>
                 <LongTextField name='description'/>
+                <TextField name='priority'/>
                 <SubmitField value='Submit'/>
                 <ErrorsField/>
-                <HiddenField name='issuedBy' value='fakeuser@foo.com'/>
+                <HiddenField name='owner' value='fakeuser@foo.com'/>
+                <HiddenField name='votes' value='0'/>
+                <HiddenField name='status' value="New"/>
+                <HiddenField name='createdOn' value={this.currDate}/>
+                <HiddenField name='updatedOn' value='2018-01-01T00:00:00Z'/>
               </Segment>
             </AutoForm>
           </Grid.Column>
@@ -63,4 +71,4 @@ class AddContact extends React.Component {
   }
 }
 
-export default AddContact;
+export default AddTicket;
