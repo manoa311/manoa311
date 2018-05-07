@@ -368,44 +368,44 @@ class ListTickets extends React.Component {
               Last Week
             </Menu.Item>
 
-              <Dropdown
-                  button
-                  name = 'temp_sort_field'
-                  type = 'text'
-                  placeholder = 'Sort Fields'
-                  options = {dbAllFields}
-                  value = {this.state.temp_sort_field}
-                  onChange = {this.handleChangeDropDownTimeFilter}
-              />
-              <Dropdown
-                  button
-                  name = 'temp_sort_order'
-                  type = 'text'
-                  placeholder = 'Sort Order'
-                  options = {sortOrder}
-                  value = {this.state.temp_sort_order}
-                  onChange = {this.handleChangeDropDown }
-              />
-              <Button
-                  name='addSort'
-                  onClick={this.addSort}
-                  disabled={!(this.state.temp_sort_field && this.state.temp_sort_order)}
-              >
-                Add Sort
-              </Button>
-              <Button
-                  name='clearSort'
-                  onClick={this.clearSort}
-              >
-                Clear Sorts
-              </Button>
+            <Dropdown
+                button
+                name = 'temp_sort_field'
+                type = 'text'
+                placeholder = 'Sort Fields'
+                options = {dbAllFields}
+                value = {this.state.temp_sort_field}
+                onChange = {this.handleChangeDropDownTimeFilter}
+            />
+            <Dropdown
+                button
+                name = 'temp_sort_order'
+                type = 'text'
+                placeholder = 'Sort Order'
+                options = {sortOrder}
+                value = {this.state.temp_sort_order}
+                onChange = {this.handleChangeDropDown }
+            />
+            <Button
+                name='addSort'
+                onClick={this.addSort}
+                disabled={!(this.state.temp_sort_field && this.state.temp_sort_order)}
+            >
+              Add Sort
+            </Button>
+            <Button
+                name='clearSort'
+                onClick={this.clearSort}
+            >
+              Clear Sorts
+            </Button>
 
-                <List>
-                  {s_list.map((sort, index) =>
-                      <Menu.Item key={index} content={sort}>
-                        {this.getSortField(sort)} <Icon name={this.getSortOrder(sort)} />
-                      </Menu.Item>)}
-                </List>
+            <List>
+              {s_list.map((sort, index) =>
+                  <Menu.Item key={index} content={sort}>
+                    {this.getSortField(sort)} <Icon name={this.getSortOrder(sort)} />
+                  </Menu.Item>)}
+            </List>
 
           </Menu>
           <Accordion fluid styled>

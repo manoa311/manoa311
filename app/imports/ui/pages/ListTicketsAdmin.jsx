@@ -260,17 +260,17 @@ class ListTickets extends React.Component {
   }
 
   timeFilterSwitch = () => {
-   this.setState({
+    this.setState({
       time_filter_active: !this.state.time_filter_active,
       time_filter_active_month: false,
       time_filter_active_week: false,
     });
 
-   if (this.state.time_filter_active) {
-     this.setState({ time_filter_status: 'Time Filter Off' });
-   } else {
-     this.setState({ time_filter_status: 'Time Filter On' });
-   }
+    if (this.state.time_filter_active) {
+      this.setState({ time_filter_status: 'Time Filter Off' });
+    } else {
+      this.setState({ time_filter_status: 'Time Filter On' });
+    }
   }
 
   timeFilter(coll) {

@@ -89,7 +89,7 @@ class Landing extends React.Component {
       time_filter_active: false,
       time_filter_active_month: false,
       time_filter_active_week: false,
-      time_filter_status: 'Apply Time Filter',
+      time_filter_status: 'Time Filter On',
       temp_filter: [],
       temp_filter_inclusive: [],
       temp_sort_field: '',
@@ -98,7 +98,6 @@ class Landing extends React.Component {
       tickets_per_page: 10,
     };
   }
-
 
   addFilter() {
     const currArr = this.state.filters;
@@ -184,6 +183,13 @@ class Landing extends React.Component {
   getFilterInputInclusive = (event) => this.setState({ temp_filter_inclusive: event.target.value.substr(0, 20) });
 
   getSearchInput = (event) => this.setState({ search: event.target.value.substr(0, 20) });
+  getSortField = (field) => _.head(field);
+  getSortOrder(field) {
+    if (_.last(field) === 'desc') {
+      return 'sort content descending';
+    }
+    return 'sort content ascending';
+  }
 
   handleChangeDropDown = (e, { name, value }) => this.setState({ [name]: value });
   handleChangeDropDownTimeFilter = (e, { name, value }) => {
@@ -209,7 +215,6 @@ class Landing extends React.Component {
   }
 
   handlePaginationChange = (e, { activePage }) => this.setState({ tickets_page: activePage })
-
   has = (criteria) => function (value) { return _.includes(value, criteria); }
 
   lastMonth() {
@@ -220,7 +225,8 @@ class Landing extends React.Component {
         this.setState({ time_filter_active: true });
       }
     } else {
-      this.setState({ time_filter_active: false, time_filter_active_month: false });
+      this.setState({ time_filter_active: false, time_filter_active_month: false,
+        time_filter_status: 'Time Filter On' });
     }
   }
 
@@ -232,7 +238,9 @@ class Landing extends React.Component {
         this.setState({ time_filter_active: true });
       }
     } else {
-      this.setState({ time_filter_active: false, time_filter_active_week: false });
+      this.setState({
+        time_filter_active: false, time_filter_active_week: false,
+        time_filter_status: 'Time Filter On' });
     }
   }
 
@@ -252,11 +260,19 @@ class Landing extends React.Component {
     this.setState({ temp_filter_array_inclusive: _.map(newArr, this.has) });
   }
 
-  timeFilterSwitch = () => this.setState({
-    time_filter_active: !this.state.time_filter_active,
-    time_filter_active_month: false,
-    time_filter_active_week: false,
-  });
+  timeFilterSwitch = () => {
+    this.setState({
+      time_filter_active: !this.state.time_filter_active,
+      time_filter_active_month: false,
+      time_filter_active_week: false,
+    });
+
+    if (this.state.time_filter_active) {
+      this.setState({ time_filter_status: 'Time Filter Off' });
+    } else {
+      this.setState({ time_filter_status: 'Time Filter On' });
+    }
+  }
 
   timeFilter(coll) {
     const filterOn = this.state.time_filter_active;
@@ -284,14 +300,6 @@ class Landing extends React.Component {
     return coll;
   }
 
-  getSortField = (field) => _.head(field);
-  getSortOrder(field) {
-    if (_.last(field) === 'desc') {
-      return 'sort content descending';
-    }
-    return 'sort content ascending';
-  }
-
   render() {
     return (this.props.ready) ? this.renderPage() : <Loader>Getting data</Loader>;
   }
@@ -317,210 +325,211 @@ class Landing extends React.Component {
     return (
         <div className='background-landing'>
           <Menu style={menuStyle} >
-              <Menu.Item>
+            <Menu.Item>
+              <Dropdown
+                  button
+                  name = 'search_field'
+                  type = 'text'
+                  placeholder = 'Search Fields'
+                  options = {_.filter(dbAllFields, (i) => i.key < 8)}
+                  value = {this.state.search_field}
+                  onChange = {this.handleChangeDropDown}
+              />
+              <Form.Input
+                  icon = 'search'
+                  placeholder = ''
+                  type = 'text'
+                  value = {this.state.search}
+                  onChange = {this.getSearchInput}
+              />
+            </Menu.Item>
+            <Menu.Item
+                name='allNewOnly'
+                active={this.state.filter_all_new}
+                onClick={this.allNewOnly}
+            >
+              All New Only
+            </Menu.Item>
+            <Menu.Item
+                name='days31last'
+                active={this.state.time_filter_active_month}
+                onClick={this.lastMonth}
+            >
+              Last Month
+            </Menu.Item>
+            <Menu.Item
+                name='days07last'
+                active={this.state.time_filter_active_week}
+                onClick={this.lastWeek}
+            >
+              Last Week
+            </Menu.Item>
+
+            <Dropdown
+                button
+                name = 'temp_sort_field'
+                type = 'text'
+                placeholder = 'Sort Fields'
+                options = {dbAllFields}
+                value = {this.state.temp_sort_field}
+                onChange = {this.handleChangeDropDownTimeFilter}
+            />
+            <Dropdown
+                button
+                name = 'temp_sort_order'
+                type = 'text'
+                placeholder = 'Sort Order'
+                options = {sortOrder}
+                value = {this.state.temp_sort_order}
+                onChange = {this.handleChangeDropDown }
+            />
+            <Button
+                fitted
+                name='addSort'
+                onClick={this.addSort}
+                disabled={!(this.state.temp_sort_field && this.state.temp_sort_order)}
+            >
+              Add Sort
+            </Button>
+            <Button
+                fitted
+                name='clearSort'
+                onClick={this.clearSort}
+            >
+              Clear Sorts
+            </Button>
+            <List>
+              {s_list.map((sort, index) =>
+                  <Menu.Item key={index} content={sort}>
+                    {this.getSortField(sort)} <Icon name={this.getSortOrder(sort)} />
+                  </Menu.Item>)}
+            </List>
+
+          </Menu>
+          <Accordion fluid styled>
+            <Accordion.Title
+                name = 'activeIndexTime'
+                active={this.state.activeIndexTime === 0} index={0} onClick={this.handleClick}>
+              <Icon name='dropdown' />
+              Time Filter
+            </Accordion.Title>
+            <Accordion.Content active={activeIndex === 0}>
+              <Menu>
                 <Dropdown
                     button
-                    name = 'search_field'
+                    name = 'search_date_type'
                     type = 'text'
-                    placeholder = 'Search Fields'
-                    options = {_.filter(dbAllFields, (i) => i.key < 8)}
-                    value = {this.state.search_field}
+                    placeholder = 'Date Field To Query'
+                    options = {timeSearchType}
+                    value = {this.state.search_date_type}
+                    onChange = {this.handleChangeDropDownTimeFilter}
+                />
+                <Dropdown
+                    button
+                    name = 'search_date_field'
+                    type = 'text'
+                    placeholder = 'Date Field To Query'
+                    options = {_.filter(dbAllFields, (i) => i.key > 7)}
+                    value = {this.state.search_date_field}
                     onChange = {this.handleChangeDropDown}
                 />
+                <Menu.Item active={this.state.date_picker_start}>
+                  <DatePicker
+                      showYearDropdown
+                      disabled={this.state.date_picker_start}
+                      isClearable={true}
+                      selected = {this.state.date_start}
+                      selectsStart
+                      startDate={this.state.date_start}
+                      endDate={this.state.date_end}
+                      onChange = {this.handleChangeStart}
+                  />
+                </Menu.Item>
+                <Menu.Item active={this.state.date_picker_end}>
+                  <DatePicker
+                      disabled={this.state.date_picker_end}
+                      showYearDropdown
+                      isClearable={true}
+                      selected = {this.state.date_end}
+                      selectsEnd
+                      startDate={this.state.date_start}
+                      endDate={this.state.date_end}
+                      onChange = {this.handleChangeEnd}
+                  />
+                </Menu.Item>
+                <Menu.Item
+                    name='applyTimeFilter'
+                    onClick={this.timeFilterSwitch}
+                >
+                  {this.state.time_filter_status}
+                </Menu.Item>
+              </Menu>
+            </Accordion.Content>
+            <Accordion.Title name = 'activeIndexInclusive'
+                             active={this.state.activeIndex === 1} index={1} onClick={this.handleClick}>
+              <Icon name='dropdown' />
+              Text Filters
+            </Accordion.Title>
+            <Accordion.Content active={activeIndex === 1}>
+              <Menu>
                 <Form.Input
                     icon = 'search'
-                    placeholder = ''
+                    placeholder = 'Inclusive Filter'
                     type = 'text'
-                    value = {this.state.search}
-                    onChange = {this.getSearchInput}
+                    value = {this.state.temp_filter_inclusive}
+                    onChange = {this.getFilterInputInclusive}
                 />
-              </Menu.Item>
-              <Menu.Item
-                  name='allNewOnly'
-                  active={this.state.filter_all_new}
-                  onClick={this.allNewOnly}
-              >
-                List All New Tickets
-              </Menu.Item>
-              <Menu.Item
-                  name='days31last'
-                  active={this.state.time_filter_active_month}
-                  onClick={this.lastMonth}
-              >
-                Last Month
-              </Menu.Item>
-              <Menu.Item
-                  name='days07last'
-                  active={this.state.time_filter_active}
-                  onClick={this.lastWeek}
-              >
-                Last Week
-              </Menu.Item>
-            </Menu>
-            <Accordion fluid styled>
-              <Accordion.Title
-                  name = 'activeIndexTime'
-                  active={this.state.activeIndexTime === 0} index={0} onClick={this.handleClick}>
-                <Icon name='dropdown' />
-                Time Filter
-              </Accordion.Title>
-              <Accordion.Content active={activeIndex === 0}>
-                <Menu>
-                  <Dropdown
-                      button
-                      name = 'search_date_type'
-                      type = 'text'
-                      placeholder = 'Date Field To Query'
-                      options = {timeSearchType}
-                      value = {this.state.search_date_type}
-                      onChange = {this.handleChangeDropDownTimeFilter}
-                  />
-                  <Dropdown
-                      button
-                      name = 'search_date_field'
-                      type = 'text'
-                      placeholder = 'Date Field To Query'
-                      options = {_.filter(dbAllFields, (i) => i.key > 7)}
-                      value = {this.state.search_date_field}
-                      onChange = {this.handleChangeDropDown}
-                  />
-                  <Menu.Item active={this.state.date_picker_start}>
-                    <DatePicker
-                        showYearDropdown
-                        disabled={this.state.date_picker_start}
-                        isClearable={true}
-                        selected = {this.state.date_start}
-                        selectsStart
-                        startDate={this.state.date_start}
-                        endDate={this.state.date_end}
-                        onChange = {this.handleChangeStart}
-                    />
-                  </Menu.Item>
-                  <Menu.Item active={this.state.date_picker_end}>
-                    <DatePicker
-                        disabled={this.state.date_picker_end}
-                        showYearDropdown
-                        isClearable={true}
-                        selected = {this.state.date_end}
-                        selectsEnd
-                        startDate={this.state.date_start}
-                        endDate={this.state.date_end}
-                        onChange = {this.handleChangeEnd}
-                    />
-                  </Menu.Item>
-                  <Menu.Item
-                      name='applyTimeFilter'
-                      onClick={this.timeFilterSwitch}
-                  >
-                    {this.state.time_filter_status}
-                  </Menu.Item>
-                </Menu>
-              </Accordion.Content>
-              <Accordion.Title name = 'activeIndexInclusive'
-                               active={this.state.activeIndex === 1} index={1} onClick={this.handleClick}>
-                <Icon name='dropdown' />
-                Text Filters
-              </Accordion.Title>
-              <Accordion.Content active={activeIndex === 1}>
-                <Menu>
-                  <Form.Input
-                      icon = 'search'
-                      placeholder = 'Inclusive Filter'
-                      type = 'text'
-                      value = {this.state.temp_filter_inclusive}
-                      onChange = {this.getFilterInputInclusive}
-                  />
-                  <Menu.Item
-                      name='addFilter'
-                      onClick={this.addFilterInclusive}
-                  >
-                    Add Inclusive Filter
-                  </Menu.Item>
-                  <Menu.Item
-                      name='clearFilter'
-                      onClick={this.clearFilterInclusive}
-                  >
-                    Clear Inclusive Filter
-                  </Menu.Item>
-                </Menu>
-                <List>
-                  {f_list_inclusive.map((filter, index) =>
-                      <Button key={index} mycontent={filter} onClick={this.removeFilterInclusive}>
-                        {filter}
-                        <Icon name = 'delete' />
-                      </Button>)}
-                </List>
-                <Menu>
-                  <Form.Input
-                      icon = 'search'
-                      placeholder = 'Exclusive Filter'
-                      type = 'text'
-                      value = {this.state.temp_filter}
-                      onChange = {this.getFilterInput}
-                  />
-                  <Menu.Item
-                      name='addFilter'
-                      onClick={this.addFilter}
-                  >
-                    Add Exclusive Filter
-                  </Menu.Item>
-                  <Menu.Item
-                      name='clearFilter'
-                      onClick={this.clearFilter}
-                  >
-                    Clear Exclusive Filter
-                  </Menu.Item>
-                </Menu>
-                <List>
-                  {f_list.map((filter, index) =>
-                      <Button name = 'activeIndexExclusive'
-                              key={index} mycontent={filter} onClick={this.removeFilterExclusive}>
-                        {filter}
-                        <Icon name = 'delete' />
-                      </Button>)}
-                </List>
-              </Accordion.Content>
-            </Accordion>
-            <Menu>
-              <Dropdown
-                  button
-                  name = 'temp_sort_field'
-                  type = 'text'
-                  placeholder = 'Sort Fields'
-                  options = {dbAllFields}
-                  value = {this.state.temp_sort_field}
-                  onChange = {this.handleChangeDropDownTimeFilter}
-              />
-              <Dropdown
-                  button
-                  name = 'temp_sort_order'
-                  type = 'text'
-                  placeholder = 'Sort Order'
-                  options = {sortOrder}
-                  value = {this.state.temp_sort_order}
-                  onChange = {this.handleChangeDropDown }
-              />
-              <Menu.Item
-                  name='addSort'
-                  onClick={this.addSort}
-              >
-                Add Sort
-              </Menu.Item>
-              <Menu.Item
-                  name='clearSort'
-                  onClick={this.clearSort}
-              >
-                Clear Sorts
-              </Menu.Item>
-              <Menu.Item>
-                <List>
-                  {s_list.map((sort, index) =>
-                      <Menu.Item key={index} content={sort}>
-                        {this.getSortField(sort)} <Icon name={this.getSortOrder(sort)} />
-                      </Menu.Item>)}
-                </List>
-              </Menu.Item>
-          </Menu>
+                <Menu.Item
+                    name='addFilter'
+                    onClick={this.addFilterInclusive}
+                >
+                  Add Inclusive Filter
+                </Menu.Item>
+                <Menu.Item
+                    name='clearFilter'
+                    onClick={this.clearFilterInclusive}
+                >
+                  Clear Inclusive Filter
+                </Menu.Item>
+              </Menu>
+              <List>
+                {f_list_inclusive.map((filter, index) =>
+                    <Button key={index} mycontent={filter} onClick={this.removeFilterInclusive}>
+                      {filter}
+                      <Icon name = 'delete' />
+                    </Button>)}
+              </List>
+              <Menu>
+                <Form.Input
+                    icon = 'search'
+                    placeholder = 'Exclusive Filter'
+                    type = 'text'
+                    value = {this.state.temp_filter}
+                    onChange = {this.getFilterInput}
+                />
+                <Menu.Item
+                    name='addFilter'
+                    onClick={this.addFilter}
+                >
+                  Add Exclusive Filter
+                </Menu.Item>
+                <Menu.Item
+                    name='clearFilter'
+                    onClick={this.clearFilter}
+                >
+                  Clear Exclusive Filter
+                </Menu.Item>
+              </Menu>
+              <List>
+                {f_list.map((filter, index) =>
+                    <Button name = 'activeIndexExclusive'
+                            key={index} mycontent={filter} onClick={this.removeFilterExclusive}>
+                      {filter}
+                      <Icon name = 'delete' />
+                    </Button>)}
+              </List>
+            </Accordion.Content>
+          </Accordion>
           <Table sortable celled selectable fixed>
             <Table.Header>
               <Table.Row>
