@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Dropdown, Table } from 'semantic-ui-react';
+import { Button, Dropdown, Icon, Popup, Table } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { Link, Redirect, withRouter } from 'react-router-dom';
 import { Bert } from 'meteor/themeteorchef:bert';
@@ -97,13 +97,19 @@ class TicketAdmin extends React.Component {
     }
 
     return (
-        <Table.Row
-            style={{ backgroundColor: this.assignRowBackgroundColor(this.props.ticket.priority) }}
-            onClick={this.handleClick}
-        >
+        <Table.Row style={{ backgroundColor: this.assignRowBackgroundColor(this.props.ticket.priority) }}>
+          <Table.Cell textAlign='center'>
+            <Link to={`/view/${this.props.ticket._id}`}>
+              <Popup
+                  trigger={<Icon name='ticket' size='large' />}
+                  content={`Click to View Ticket ${this.props.ticket._id}`}
+                  position='bottom left'
+              />
+            </Link>
+          </Table.Cell>
           <Table.Cell>{this.props.ticket.priority}</Table.Cell>
           <Table.Cell>{this.props.ticket.status}</Table.Cell>
-          <Table.Cell><Link to={`/view/${this.props.ticket._id}`}>{this.props.ticket.building}</Link></Table.Cell>
+          <Table.Cell>{this.props.ticket.building}</Table.Cell>
           <Table.Cell>{this.props.ticket.floor}</Table.Cell>
           <Table.Cell>{this.props.ticket.room}</Table.Cell>
           <Table.Cell>{this.props.ticket.description}</Table.Cell>
@@ -114,16 +120,14 @@ class TicketAdmin extends React.Component {
             <Dropdown
                 button
                 name = 'update_status'
-                type = 'text'
+                type = 'text'Z
                 placeholder = 'Update Status'
                 options = {updateOptions}
                 onChange = {this.handleChangeDropDown}
             />
           </Table.Cell>
           <Table.Cell>
-            <Button onClick={this.onDelete}>
-              Delete
-            </Button>
+            <Button onClick={this.onDelete} content='Delete' />
           </Table.Cell>
         </Table.Row>
     );
