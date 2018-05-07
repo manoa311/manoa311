@@ -5,8 +5,8 @@ import { withRouter, Link } from 'react-router-dom';
 import { Tickets, TicketSchema } from '/imports/api/ticket/ticket';
 
 const bgColors = {
-  "Urgent": "#E9573F",
-  "Regular": "#F6BB42",
+  "Emergency": "#E9573F",
+  "Urgent": "#F6BB42",
 };
 
 

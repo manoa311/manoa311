@@ -125,7 +125,7 @@ class ViewTicket extends React.Component {
               <Table celled fixed>
                 Description
                 <Table.Row>
-                  Some long description of the problem
+                  {this.props.ticket.longdescription}
                 </Table.Row>
               </Table>
               <Button onClick={this.handleUp}><Icon className='angle up'/></Button>

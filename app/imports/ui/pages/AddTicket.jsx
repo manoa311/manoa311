@@ -37,11 +37,11 @@ class AddTicket extends React.Component {
 
   /** On submit, insert the data. */
   submit(data) {
-    const { building, floor, room, description, priority, votes, status, createdOn } = data;
+    const { building, floor, room, description, longdescription, priority, votes, status, createdOn } = data;
     const owner = Meteor.user().username;
     const updatedOn = this.currDate;
 
-    Tickets.insert({ building, floor, room, description, priority, votes, status, createdOn, updatedOn, owner }, this.insertCallback);
+    Tickets.insert({ building, floor, room, description, longdescription, priority, votes, status, createdOn, updatedOn, owner }, this.insertCallback);
 
     this.setState({redirect: true});
   }
@@ -60,9 +60,10 @@ class AddTicket extends React.Component {
               <Segment>
                 <TextField name='building'/>
                 <TextField name='floor'/>
-                <TextField name='room'/>
-                <LongTextField name='description'/>
-                <TextField name='priority'/>
+                <TextField name='room' label='Room number'/>
+                <TextField name='priority' label='Ticket Priority (Emergency, Urgent, or Normal)'/>
+                <TextField name='description' label='Short description of the issue'/>
+                <LongTextField name='longdescription' label='Additional information about the issue'/>
                 <SubmitField value='Submit'/>
                 <ErrorsField/>
                 <HiddenField name='owner' value='fakeuser@foo.com'/>
