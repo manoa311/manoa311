@@ -8,8 +8,6 @@ import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
 import Landing from '../pages/Landing';
 import ListContacts from '../pages/ListContacts';
-import ListContactsAdmin from '../pages/ListContactsAdmin';
-import AddTicket from '../pages/AddTicket';
 import AddContact from '../pages/AddContact';
 import EditContact from '../pages/EditContact';
 import ViewTicket from '../pages/ViewTicket';
@@ -19,6 +17,7 @@ import Signup from '../pages/Signup';
 import Signout from '../pages/Signout';
 import ListTicketsAdmin from '../pages/ListTicketsAdmin';
 import MyTickets from '../pages/MyTickets';
+import AddTicket from '../pages/AddTicket';
 
 
 /** Top-level layout component for this application. Called in imports/startup/client/startup.jsx. */
